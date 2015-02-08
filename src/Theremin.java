@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
 import ddf.minim.ugens.Oscil;
