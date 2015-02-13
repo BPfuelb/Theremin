@@ -17,7 +17,7 @@ class Sensor {
 		controller.config().setFloat("Gesture.Circle.MinRadius", 20.0f);
 		controller.config().setFloat("Gesture.Circle.MinArc", .15f);
 		controller.config().save();
-		
+
 	}
 
 	public void getValues() {
@@ -28,13 +28,14 @@ class Sensor {
 			Hand lHand = frame.hands().leftmost();
 			Hand rHand = frame.hands().rightmost();
 
-			float fingerZahl = rHand.fingers().get(2).tipPosition().getY();
+			// float fingerZahl = rHand.fingers().get(2).tipPosition().getY();
 
 			float leftHand = lHand.palmPosition().getY();
 			float rightHand = rHand.palmPosition().getY();
 
-			float diff = fingerZahl - rightHand;
-			rightHand = rightHand - diff;
+			// Finger veraenderung
+			// float diff = fingerZahl - rightHand;
+			// rightHand = rightHand - diff;
 
 			parent.handMoved(leftHand, rightHand);
 		} else
