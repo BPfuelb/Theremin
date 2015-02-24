@@ -16,6 +16,7 @@ public class Theremin extends PApplet {
   private AudioOutput out;
   private Oscil wave;
   private Sensor sensor;
+  private boolean quantized;
 
   private PImage violin, bass, kreuz;
   private PFont font = createFont("Arial", 32);
@@ -33,6 +34,8 @@ public class Theremin extends PApplet {
     musicScale = new MusicalScale();
     sensor = new Sensor(this);
 
+    quantized = true;
+
     violin = loadImage("violin.png");
     bass = loadImage("bass.png");
     kreuz = loadImage("kreuz.png");
@@ -42,12 +45,12 @@ public class Theremin extends PApplet {
   public void draw() {
     background(255);
 
-    // sensor.getGestures();
-
     drawViolin();
     drawBass();
 
     sensor.getValues();
+    sensor.getRotation();
+    // sensor.getGestures();
   }
 
   public void keyPressed() {
@@ -73,6 +76,9 @@ public class Theremin extends PApplet {
 
     case '4':
       wave.setWaveform(Waves.QUARTERPULSE);
+      break;
+    case 'q':
+      quantized = !quantized;
       break;
 
     default:
@@ -172,20 +178,31 @@ public class Theremin extends PApplet {
 
     // frequency
     double freq = map(right, 100, 300, 62, 2094);
-    // freq = 440d;
-    freq = musicScale.quantify(freq);
-    // System.out.println("freq" + freq);
+
+    if (quantized)
+      freq = musicScale.quantify(freq);
+
     wave.setFrequency((float) freq);
 
-    
-    
-
-    if (freq > 28)
-    {
+    if (freq > 50 && freq < 2093) {
       textFont(font);
-      text(musicScale.getScale().get(freq) , width / 2, height / 2);
-      drawNote(freq);
+      double quantisized = musicScale.quantify(freq);
+      text(musicScale.getScale().get(quantisized), width / 2, height / 2);
+      drawNote(quantisized);
     }
+  }
+
+  public void handRotation(float rotation) {
+    System.out.println("Rotation: " + rotation);
+    if (rotation > 0.7) {
+      System.out.print("MOL: ");
+      System.out.println( map(rotation,0.7f,(float)Math.PI,0f,1f));
+      
+    } else if (rotation < 0f) {
+      System.out.print("DUR: ");
+      System.out.println( map(rotation,-0.4f,(float)- Math.PI ,0f,1f));
+    }
+
   }
 
   public void drawNote(Double freq) {
@@ -197,33 +214,24 @@ public class Theremin extends PApplet {
 
     int pos = 0;
 
-    if(!musicScale.isHalfStep(key))
-    {
+    if (!musicScale.isHalfStep(key)) {
       key = musicScale.scaleWithoutHalfStep.indexOf(freq);
       pos = key * 5;
-    }
-    else
-    {
-      // System.out.println("Freq davor " + freq);
-      Double freq2 = freq /  (Math.pow(2d, 1d / 12d));
-      //System.out.println("Freq danach " + freq2);
+    } else {
+      Double freq2 = freq / (Math.pow(2d, 1d / 12d));
       key = musicScale.scaleWithoutHalfStep.indexOf(freq2);
       pos = key * 5;
-      
+
       if (key >= 24)
-      image(kreuz, width/2 -15, height - (pos + (height - (violinPos + 182))));
+        image(kreuz, width / 2 - 15, height - (pos + (height - (violinPos + 182))));
       else
-        image(kreuz, width/2 -15, height - (pos + (height - (bassPos + 122))));
-      // System.out.println("Key " + key);
+        image(kreuz, width / 2 - 15, height - (pos + (height - (bassPos + 122))));
     }
 
     if (key >= 24)
       ellipse(width / 2, height - (pos + (height - (violinPos + 190))), 11, 10);
     else
       ellipse(width / 2, height - (pos + (height - (bassPos + 130))), 11, 10);
-
-    // text("Key: " + key + " pos: " + (height - (pos + (height - (bassPos + 130)))), width / 2, height - 50);
-
   }
 
 }
