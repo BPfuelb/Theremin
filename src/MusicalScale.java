@@ -6,6 +6,7 @@ public class MusicalScale {
   private String[] identifier;
   private LinkedHashMap<Double, String> scale;
   public ArrayList<Double> scaleWithoutHalfStep;
+  public final static double halfStep = (double) (440d * (Math.pow(2d, (-48d) / 12d)));
 
   public MusicalScale() {
     scale = new LinkedHashMap<Double, String>();
@@ -54,13 +55,13 @@ public class MusicalScale {
   }
 
   public boolean isHalfStep(int key) {
-    
+
     // System.out.print("inputKey " + key);
-    
+
     key = ((key - 1) % 12);
-    
+
     // System.out.print(" case " + key);
-    
+
     switch (key) {
     case 1:
     case 4:
@@ -70,8 +71,18 @@ public class MusicalScale {
       // System.out.println(" -> Halbton (schwarz)");
       return true;
     default:
-      //System.out.println(" -> Vollton (weiﬂ)");
+      // System.out.println(" -> Vollton (weiﬂ)");
       return false;
     }
+  }
+
+  public double getNoteByValue(double freq, int distance) {
+    int key = getKey(quantify(freq));
+    if (key + distance < scale.keySet().size()) {
+      Object[] returnFreq = scale.keySet().toArray();
+
+      return (Double) returnFreq[key + distance];
+    }
+    return 0;
   }
 }

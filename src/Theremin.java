@@ -15,6 +15,8 @@ public class Theremin extends PApplet {
   private Minim minim;
   private AudioOutput out;
   private Oscil wave;
+  private Oscil accord1;
+  private Oscil accord2;
   private Sensor sensor;
   private boolean quantized;
 
@@ -29,8 +31,14 @@ public class Theremin extends PApplet {
 
     minim = new Minim(this);
     out = minim.getLineOut();
-    wave = new Oscil(440, 0.5f, Waves.SINE);
+
+    wave = new Oscil(440, 0.0f, Waves.SINE);
+    accord1 = new Oscil(440, 0.0f, Waves.SINE);
+    accord2 = new Oscil(440, 0.0f, Waves.SINE);
+
     wave.patch(out);
+    accord1.patch(out);
+
     musicScale = new MusicalScale();
     sensor = new Sensor(this);
 
@@ -49,7 +57,6 @@ public class Theremin extends PApplet {
     drawBass();
 
     sensor.getValues();
-    sensor.getRotation();
     // sensor.getGestures();
   }
 
@@ -167,7 +174,7 @@ public class Theremin extends PApplet {
     }
   }
 
-  public void handMoved(float left, float right) {
+  public void handMoved(float left, float right, float rotate) {
 
     // aplitude
     float amp = map(left, 100, 300, 0, 1);
@@ -177,12 +184,13 @@ public class Theremin extends PApplet {
     wave.setAmplitude(amp);
 
     // frequency
-    double freq = map(right, 100, 300, 62, 2094);
-
+    double freq = map(right, 200, 300, 62, 1000); // 2094
+    // freq = 440d; // Test
     if (quantized)
       freq = musicScale.quantify(freq);
 
     wave.setFrequency((float) freq);
+    handRotation(rotate, freq);
 
     if (freq > 50 && freq < 2093) {
       textFont(font);
@@ -192,34 +200,82 @@ public class Theremin extends PApplet {
     }
   }
 
-  public void handRotation(float rotation) {
-    System.out.println("Rotation: " + rotation);
-    if (rotation > 0.7) {
-      System.out.print("MOL: ");
-      System.out.println( map(rotation,0.7f,(float)Math.PI,0f,1f));
-      
-    } else if (rotation < 0f) {
-      System.out.print("DUR: ");
-      System.out.println( map(rotation,-0.4f,(float)- Math.PI ,0f,1f));
-    }
+  private void handRotation(float rotation, double freqenz) {
 
+    if (rotation > 0.7) {
+
+      // System.out.print("MOL: ");
+      // System.out.println( map(rotation,0.7f,(float)Math.PI,0f,1f));
+
+      float ampAcc = map(rotation, 0.7f, (float) Math.PI, 0f, 1f);
+      int ampTrans = (int) map(rotation, 0.7f, (float) Math.PI, 255, 0);
+
+      accord1.setAmplitude(ampAcc);
+      accord2.setAmplitude(ampAcc);
+
+      double acc1 = musicScale.getNoteByValue(freqenz, 4);
+      double acc2 = musicScale.getNoteByValue(freqenz, 7);
+
+      accord1.setFrequency((float) acc1);
+      accord2.setFrequency((float) acc2);
+
+      // drawNote(acc1);
+      // drawNote(acc2);
+
+      drawNote(acc1, (int) ampTrans);
+      drawNote(acc2, (int) ampTrans);
+
+    } else if (rotation < 0f) {
+
+      // System.out.print("DUR: ");
+      // System.out.println( map(rotation,-0.4f,(float)- Math.PI ,0f,1f));
+
+      float ampAcc = map(rotation, 0.0f, (float) -Math.PI + 1.5f, 0f, 1f);
+      int ampTrans = (int) map(rotation, 0.0f, (float) -Math.PI + 1.5f, 255, 0);
+
+      accord1.setAmplitude(ampAcc);
+      accord2.setAmplitude(ampAcc);
+
+      double acc1 = musicScale.getNoteByValue(freqenz, 3);
+      double acc2 = musicScale.getNoteByValue(freqenz, 7);
+
+      accord1.setFrequency((float) acc1);
+      accord2.setFrequency((float) (acc2));
+
+      drawNote(acc1, (int) ampTrans);
+      drawNote(acc2, (int) ampTrans);
+
+    } else {
+      accord1.setAmplitude(0f);
+      accord2.setAmplitude(0f);
+    }
   }
 
-  public void drawNote(Double freq) {
-    fill(0);
+  public int drawNote(Double freq) {
+    return drawNote(freq, 0);
+  }
+
+  public int drawNote(Double freq, int transparency) {
+    
+    if (transparency >= 0 && transparency <= 255)
+      fill(transparency);
 
     int key = musicScale.getKey(freq);
 
-    // System.out.println("Taste "+key);
+    System.out.println("Taste " + key);
 
     int pos = 0;
 
     if (!musicScale.isHalfStep(key)) {
       key = musicScale.scaleWithoutHalfStep.indexOf(freq);
+      if (key == -1)
+        System.out.println("Hier passierts: " + freq);
       pos = key * 5;
     } else {
       Double freq2 = freq / (Math.pow(2d, 1d / 12d));
       key = musicScale.scaleWithoutHalfStep.indexOf(freq2);
+      if (key == -1)
+        System.out.println("Hier passierts2: " + freq);
       pos = key * 5;
 
       if (key >= 24)
@@ -232,6 +288,9 @@ public class Theremin extends PApplet {
       ellipse(width / 2, height - (pos + (height - (violinPos + 190))), 11, 10);
     else
       ellipse(width / 2, height - (pos + (height - (bassPos + 130))), 11, 10);
+
+    return key;
+
   }
 
 }

@@ -28,29 +28,20 @@ class Sensor {
       Hand lHand = frame.hands().leftmost();
       Hand rHand = frame.hands().rightmost();
 
-      // float fingerZahl = rHand.fingers().get(2).tipPosition().getY();
+      float fingerZahl = rHand.fingers().get(2).tipPosition().getY();
 
       float leftHand = lHand.palmPosition().getY();
       float rightHand = rHand.palmPosition().getY();
+      float lHandRotation = lHand.palmNormal().roll();
 
-      // Finger veraenderung
-      // float diff = fingerZahl - rightHand;
-      // rightHand = rightHand - diff;
+       // Finger veraenderung
+       float diff = fingerZahl / 4 - rightHand;
+       rightHand = rightHand - diff;
 
-      parent.handMoved(leftHand, rightHand);
+      parent.handMoved(leftHand, rightHand, lHandRotation);
     } else
-      parent.handMoved(0, 0);
+      parent.handMoved(0, 0, 0);
 
-  }
-
-  public void getRotation() {
-    Frame frame = controller.frame();
-    if (frame.hands().count() == 2) {
-
-      Hand lHand = frame.hands().leftmost();
-
-      parent.handRotation(lHand.palmNormal().roll());
-    }
   }
 
   public void getGestures() {
