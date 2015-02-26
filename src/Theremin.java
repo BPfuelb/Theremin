@@ -12,7 +12,7 @@ public class Theremin extends PApplet {
   private static final int violinPos = 100;
   private static final int bassPos = 300;
 
-  private Minim minim;
+  public Minim minim;
   private AudioOutput out;
   private Oscil wave;
   private Oscil accord1;
@@ -20,13 +20,21 @@ public class Theremin extends PApplet {
   private Sensor sensor;
   private boolean quantized;
 
-  private PImage violin, bass, kreuz;
-  private PFont font = createFont("Arial", 32);
+  private Beater beater;
+
+  private Background background;
 
   private MusicalScale musicScale;
+  
+  private PImage kreuz;
+
+  private PFont font = createFont("Arial", 32);
   private int waveForm = 0;
 
   public void setup() {
+    
+    frameRate(30);
+    
     size(700, 500);
 
     minim = new Minim(this);
@@ -44,27 +52,29 @@ public class Theremin extends PApplet {
 
     quantized = true;
 
-    violin = loadImage("violin.png");
-    bass = loadImage("bass.png");
+
+    background = new Background(this);
     kreuz = loadImage("kreuz.png");
+    beater = new Beater(this, 50, 50, 70);
 
   }
 
   public void draw() {
     background(255);
-
-    drawViolin();
-    drawBass();
+    
+    background.draw();
 
     sensor.getValues();
     // sensor.getGestures();
+    beater.draw();
+
   }
 
   public void keyPressed() {
-    chooseWave(key);
+    keyPressed(key);
   }
 
-  public void chooseWave(int count) {
+  public void keyPressed(int count) {
     switch (count) {
     case '0':
       wave.setWaveform(Waves.SINE);
@@ -88,6 +98,18 @@ public class Theremin extends PApplet {
       quantized = !quantized;
       break;
 
+    case '+':
+      beater.changeBeat(+5);
+      break;
+
+    case '-':
+      beater.changeBeat(-5);
+      break;
+      
+    case 'm':
+      beater.onOffMute();
+      break;
+      
     default:
       break;
     }
@@ -96,7 +118,7 @@ public class Theremin extends PApplet {
   public void nextWave() {
 
     waveForm = (waveForm + 6) % 5;
-    chooseWave(48 + waveForm);
+    keyPressed(48 + waveForm);
     System.out.println("Next wave: " + waveForm);
 
   }
@@ -107,54 +129,6 @@ public class Theremin extends PApplet {
       PApplet.main(concat(appletArgs, passedArgs));
     } else {
       PApplet.main(appletArgs);
-    }
-  }
-
-  public void drawViolin() {
-    strokeWeight(1);
-
-    image(violin, 10, violinPos + 8);
-
-    // Oben
-    strokeWeight(0.1f);
-    for (int i = 0; i < 2; i++) {
-      line(0, i * 10 + violinPos, width, i * 10 + violinPos);
-    }
-
-    // Mitte
-    strokeWeight(1);
-    for (int i = 0; i < 5; i++) {
-      line(0, i * 10 + violinPos + 20, width, i * 10 + violinPos + 20);
-    }
-
-    // Unten
-    strokeWeight(0.1f);
-    for (int i = 0; i < 2; i++) {
-      line(0, i * 10 + violinPos + 20 + 50, width, i * 10 + violinPos + 20 + 50);
-    }
-  }
-
-  public void drawBass() {
-    strokeWeight(1);
-
-    image(bass, 0, bassPos + 19);
-
-    // Oben
-    strokeWeight(0.1f);
-    for (int i = 0; i < 2; i++) {
-      line(0, i * 10 + bassPos, width, i * 10 + bassPos);
-    }
-
-    // Mitte
-    strokeWeight(1);
-    for (int i = 0; i < 5; i++) {
-      line(0, i * 10 + bassPos + 20, width, i * 10 + bassPos + 20);
-    }
-
-    // Unten
-    strokeWeight(0.1f);
-    for (int i = 0; i < 2; i++) {
-      line(0, i * 10 + bassPos + 20 + 50, width, i * 10 + bassPos + 20 + 50);
     }
   }
 
@@ -177,10 +151,9 @@ public class Theremin extends PApplet {
   public void handMoved(float left, float right, float rotate) {
 
     // aplitude
-    float amp = map(left, 100, 300, 0, 1);
+    float amp = map(left, 100, 500, 0, 1);
     if (amp < 0)
       amp = 0;
-    // System.out.println("amp: " + amp);
     wave.setAmplitude(amp);
 
     // frequency
@@ -256,26 +229,22 @@ public class Theremin extends PApplet {
   }
 
   public int drawNote(Double freq, int transparency) {
-    
+
     if (transparency >= 0 && transparency <= 255)
       fill(transparency);
 
     int key = musicScale.getKey(freq);
 
-    System.out.println("Taste " + key);
+    // System.out.println("Taste " + key);
 
     int pos = 0;
 
     if (!musicScale.isHalfStep(key)) {
       key = musicScale.scaleWithoutHalfStep.indexOf(freq);
-      if (key == -1)
-        System.out.println("Hier passierts: " + freq);
       pos = key * 5;
     } else {
       Double freq2 = freq / (Math.pow(2d, 1d / 12d));
       key = musicScale.scaleWithoutHalfStep.indexOf(freq2);
-      if (key == -1)
-        System.out.println("Hier passierts2: " + freq);
       pos = key * 5;
 
       if (key >= 24)
@@ -291,6 +260,10 @@ public class Theremin extends PApplet {
 
     return key;
 
+  }
+
+  public void beat(float val) {
+    beater.fill(val);
   }
 
 }

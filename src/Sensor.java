@@ -31,12 +31,13 @@ class Sensor {
       float fingerZahl = rHand.fingers().get(2).tipPosition().getY();
 
       float leftHand = lHand.palmPosition().getY();
+      System.out.println("linke Hand: " + leftHand);
       float rightHand = rHand.palmPosition().getY();
       float lHandRotation = lHand.palmNormal().roll();
 
-       // Finger veraenderung
-       float diff = fingerZahl / 4 - rightHand;
-       rightHand = rightHand - diff;
+      // Finger veraenderung
+      float diff = fingerZahl / 5 - rightHand;
+      rightHand = rightHand - diff;
 
       parent.handMoved(leftHand, rightHand, lHandRotation);
     } else
