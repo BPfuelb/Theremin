@@ -65,13 +65,13 @@ public class Note {
     posY++;
   }
 
-  private void setPosX(int posX) {
+  public void setPosX(int posX) {
     if (posX < 0 || posX > 1000)
       throw new IllegalArgumentException("posX out of range");
     this.posX = posX;
   }
 
-  private void setPosY(int posY) {
+  public void setPosY(int posY) {
     if (posY < 0 || posY > 1000)
       throw new IllegalArgumentException("posY out of range");
     this.posY = posY;
@@ -100,11 +100,11 @@ public class Note {
   }
 
   private void setSteam() {
-    steam = Steam.noSteam;
+    steam = Steam.upSteam;
   }
 
   private void setPeriod() {
-    period = Period.quarterNote;
+    period = Period.sixteenthNote;
   }
 
   private void setLine() {

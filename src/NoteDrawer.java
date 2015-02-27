@@ -2,50 +2,118 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class NoteDrawer {
-  
-  private PImage cross;
+
+  private PImage cross, flag, doubleFlag;
   private PApplet parent;
-  
-  public NoteDrawer(PApplet parent)
-  {
+
+  public NoteDrawer(PApplet parent) {
     this.parent = parent;
     cross = parent.loadImage("kreuz.png");
+    flag = parent.loadImage("flag.png");
+    doubleFlag = parent.loadImage("doubleFlag.png");
   }
 
-  public int draw(Note note, int transparency) {
+  public void draw(Note note, int transparency) {
 
     if (transparency >= 0 && transparency <= 255)
       parent.fill(transparency);
 
-    int key = MusicalScale.singleton.getKey(note.getFreqencey());
+    cross(note);
+    noteHead(note);
+    noteSteam(note);
+    notePeriod(note);
+  }
 
-    int pos = 0;
+  private void cross(Note note) {
+    if (note.IsHalftone())
+      parent.image(cross, note.getPosX() - 15, note.getPosY() - 8);
+  }
 
-    if (!MusicalScale.isNoteHalfStep(key)) {
-      key = MusicalScale.singleton.scaleWithoutHalfStep.indexOf(note.getFreqencey());
-      pos = key * 5;
-    } else { // filter HalfStop notes
-      Double freq2 = note.getFreqencey() / (Math.pow(2d, 1d / 12d));
-      key = MusicalScale.singleton.scaleWithoutHalfStep.indexOf(freq2);
-      pos = key * 5;
+  private void noteHead(Note note) {
 
-      // draw cross
-      if (key >= 24) {
-        float posYimage = parent.g.height - (pos + (parent.g.height - (Background.VIOLINPOS + 182)));
-        parent.image(cross, note.getPosX() - 15, posYimage);
-      } else {
-        float posYimage = parent.g.height - (pos + (parent.g.height - (Background.BASSPOS + 122)));
-        parent.image(cross, note.getPosX() - 15, posYimage);
-      }
+    switch (note.getPeriod()) {
+    case wholeNote:
+      parent.translate(note.getPosX(), note.getPosY());
+      parent.pushMatrix();
+      parent.rotate(-0.1f);
+      parent.fill(0);
+      parent.ellipse(0, 0, 13, 10);
+      parent.rotate(1.1f);
+      parent.fill(255);
+      parent.ellipse(0, 0, 8, 6);
+      parent.popMatrix();
+      parent.translate(-note.getPosX(), -note.getPosY());
+      break;
+    case halfNote:
+      parent.translate(note.getPosX(), note.getPosY());
+      parent.pushMatrix();
+      parent.rotate(-0.4f);
+      parent.fill(0);
+      parent.ellipse(0, 0, 13, 8);
+      parent.fill(255);
+      parent.ellipse(0, 0, 12, 5);
+      parent.popMatrix();
+      parent.translate(-note.getPosX(), -note.getPosY());
+      break;
+    case quarterNote:
+    case eighthNote:
+    case sixteenthNote:
+      parent.translate(note.getPosX(), note.getPosY());
+      parent.pushMatrix();
+      parent.rotate(-0.4f);
+      parent.ellipse(0, 0, 13, 8);
+      parent.popMatrix();
+      parent.translate(-note.getPosX(), -note.getPosY());
+      break;
+    default:
+      break;
     }
 
-    // draw note
-    if (key >= 24)
-      parent.ellipse(note.getPosX(), parent.g.height - (pos + (parent.g.height - (Background.VIOLINPOS + 190))), 11, 10);
-    else
-      parent.ellipse(note.getPosX(), parent.g.height - (pos + (parent.g.height - (Background.BASSPOS + 130))), 11, 10);
+  }
 
-    return key;
+  private void noteSteam(Note note) {
+
+    int x = note.getPosX();
+    int y = note.getPosY();
+    parent.strokeWeight(2f);
+    
+    switch (note.getSteam()) {
+    case upSteam:
+      parent.line(x+5, y-2, x+5, y-30);
+      break;
+    case downSteam:
+      parent.line(x-6, y+2, x-6, y+30);
+      break;
+    case noSteam:
+      break;
+    default:
+      break;
+    }
 
   }
+
+  private void notePeriod(Note note) {
+    
+    int x = note.getPosX();
+    int y = note.getPosY();
+    parent.noFill();
+    
+    switch (note.getPeriod()) {
+    case wholeNote:
+    case halfNote:
+    case quarterNote:
+      // nothing to do here
+      break;
+    case eighthNote:
+      parent.image(flag, x + 5, y - 31);
+      break;
+    case sixteenthNote:
+      parent.image(doubleFlag, x + 5, y - 31);
+      break;
+    default:
+      break;
+    }
+  }
+
+
 }

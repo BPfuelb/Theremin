@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import processing.core.PApplet;
+
 public class MusicalScale {
 
   public static MusicalScale singleton;
@@ -8,16 +10,13 @@ public class MusicalScale {
   private String[] identifier;
 
   public LinkedHashMap<Double, Note> scale;
-
-  public ArrayList<Note> scale2;
   public ArrayList<Double> scaleWithoutHalfStep;
 
   public final static double halfStep = (double) (440d * (Math.pow(2d, (-48d) / 12d)));
 
   public MusicalScale(Theremin parent) {
-    scale2 = new ArrayList<>();
-    scale = new LinkedHashMap<Double, Note>();
 
+    scale = new LinkedHashMap<Double, Note>();
     scaleWithoutHalfStep = new ArrayList<>();
 
     identifier = new String[] { ",,A", ",,Ais/,,B", ",,H", ",C", ",Cis/,Des", ",D", ",Dis/,Es", ",E", ",F", ",Fis/,Ges", ",G", ",Gis/,As", ",A", ",Ais/,B", ",H", "C", "Cis/Des", "D", "Dis/Es", "E",
@@ -33,12 +32,16 @@ public class MusicalScale {
 
     for (int i = 0; i < 88; i++) {
       double frequency = (double) (440d * (Math.pow(2d, (i - 48d) / 12d)));
-
-      scale.put(frequency, new Note(frequency, identifier[i]));
+      Note newNote = new Note(frequency, identifier[i]);
+      scale.put(frequency, newNote);
 
       if (!isNoteHalfStep(getKey(frequency))) {
         scaleWithoutHalfStep.add(frequency);
       }
+    }
+    
+    for (Note note : scale.values()) {
+      calcPosition(note, parent);
     }
   }
 
@@ -86,4 +89,27 @@ public class MusicalScale {
     return null;
   }
 
+  public void calcPosition(Note note, PApplet parent) {
+    
+    int key = note.getKey();
+    int pos = 0;
+
+    if (!note.IsHalftone()) {
+      key = scaleWithoutHalfStep.indexOf(note.getFreqencey());
+      pos = key * 5;
+    } else { // filter HalfStop notes
+      Double freq2 = note.getFreqencey() / (Math.pow(2d, 1d / 12d));
+      key = scaleWithoutHalfStep.indexOf(freq2);
+      pos = key * 5;
+    }
+
+    if (key >= 24) {
+      float posY = parent.g.height - (pos + (parent.g.height - (Background.VIOLINPOS + 190)));
+      note.setPosY((int) posY);
+    } else {
+      float posY = parent.g.height - (pos + (parent.g.height - (Background.BASSPOS + 130)));
+      note.setPosY((int) posY);
+    }
+
+  }
 }

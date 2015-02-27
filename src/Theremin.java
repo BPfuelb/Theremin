@@ -144,7 +144,7 @@ public class Theremin extends PApplet {
 
     // frequency
     double freq = map(right, 200, 350, 200, 1000); // 2094
-    // freq = 440d; // Test
+    freq = 440d; // Test
 
     if (quantized)
       freq = musicScale.quantify(freq);
