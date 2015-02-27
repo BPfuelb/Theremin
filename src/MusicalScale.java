@@ -3,13 +3,21 @@ import java.util.LinkedHashMap;
 
 public class MusicalScale {
 
+  public static MusicalScale singleton;
+
   private String[] identifier;
-  private LinkedHashMap<Double, String> scale;
+
+  public LinkedHashMap<Double, Note> scale;
+
+  public ArrayList<Note> scale2;
   public ArrayList<Double> scaleWithoutHalfStep;
+
   public final static double halfStep = (double) (440d * (Math.pow(2d, (-48d) / 12d)));
 
-  public MusicalScale() {
-    scale = new LinkedHashMap<Double, String>();
+  public MusicalScale(Theremin parent) {
+    scale2 = new ArrayList<>();
+    scale = new LinkedHashMap<Double, Note>();
+
     scaleWithoutHalfStep = new ArrayList<>();
 
     identifier = new String[] { ",,A", ",,Ais/,,B", ",,H", ",C", ",Cis/,Des", ",D", ",Dis/,Es", ",E", ",F", ",Fis/,Ges", ",G", ",Gis/,As", ",A", ",Ais/,B", ",H", "C", "Cis/Des", "D", "Dis/Es", "E",
@@ -18,25 +26,20 @@ public class MusicalScale {
         "cis'''/des'''", "d'''", "dis'''/es'''", "e'''", "f'''", "fis'''/ges'''", "g'''", "gis'''/as'''", "a'''", "ais'''/b'''", "h'''", "c''''", "cis''''/des''''", "d''''", "dis''''/es''''",
         "e''''", "f''''", "fis''''/ges''''", "g''''", "gis''''/as''''", "a''''", "ais''''/b''''", "h''''", "c'''''" };
 
-    generateNotes();
+    generateNotes(parent);
   }
 
-  private void generateNotes() {
+  private void generateNotes(Theremin parent) {
 
     for (int i = 0; i < 88; i++) {
-      // double frequency = (double) (440d * Math.pow(Math.pow(2d, 1d / 12d), i - 48));
       double frequency = (double) (440d * (Math.pow(2d, (i - 48d) / 12d)));
 
-      scale.put(frequency, identifier[i]);
+      scale.put(frequency, new Note(frequency, identifier[i]));
 
-      if (!isHalfStep(getKey(frequency))) {
+      if (!isNoteHalfStep(getKey(frequency))) {
         scaleWithoutHalfStep.add(frequency);
       }
     }
-  }
-
-  public LinkedHashMap<Double, String> getScale() {
-    return scale;
   }
 
   public double quantify(double currentFreqency) {
@@ -50,17 +53,16 @@ public class MusicalScale {
 
   public int getKey(Double freq) {
     int key = (int) ((Math.log(freq / 440d) / Math.log(2)) * 12d + 49d);
-    // System.out.println("inputFreq " + freq + " key " + key);
     return key;
   }
 
-  public boolean isHalfStep(int key) {
+  public static int getKeyToFreqency(Double frequency) {
+    int key = (int) ((Math.log(frequency / 440d) / Math.log(2)) * 12d + 49d);
+    return key;
+  }
 
-    // System.out.print("inputKey " + key);
-
+  public static boolean isNoteHalfStep(int key) {
     key = ((key - 1) % 12);
-
-    // System.out.print(" case " + key);
 
     switch (key) {
     case 1:
@@ -68,21 +70,20 @@ public class MusicalScale {
     case 6:
     case 9:
     case 11:
-      // System.out.println(" -> Halbton (schwarz)");
       return true;
     default:
-      // System.out.println(" -> Vollton (weiﬂ)");
       return false;
     }
   }
 
-  public double getNoteByValue(double freq, int distance) {
-    int key = getKey(quantify(freq));
-    if (key + distance < scale.keySet().size()) {
-      Object[] returnFreq = scale.keySet().toArray();
+  public Note NoteByDistance(Note note, int distance) {
+    int key = note.getKey();
+    if (key + distance < scale.values().size()) {
+      Object[] returnFreq = scale.values().toArray();
 
-      return (Double) returnFreq[key + distance];
+      return (Note) returnFreq[key + distance];
     }
-    return 0;
+    return null;
   }
+
 }

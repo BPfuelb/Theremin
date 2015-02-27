@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>520</x>
+      <y>250</y>
+      <w>180</w>
+      <h>370</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Class&gt;&gt;
+*Note*
+--
+- posX: int
+- posY: int
+- key: int
+- freqency: Double
+- description: String
+- isHalftone: boolean 
+- steam: Steam
+- period: Period
+- extendLine: ExtendLine
+--
++ getFrequency(): Double
++ getDescription(): String
++ getKey(): int
++ isHalftone(): boolean
++ getPeriod(): Period
++ getSteam(): Steam
++ getLine(): ExtendLine
+
++ getPosX(): int
++ getPosY(): int
+
++ increasePosY()
+- setPosX(posX: int)
+- setPosY(posY: int)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>320</x>
+      <y>240</y>
+      <w>100</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ENUM&gt;&gt;
+*Steam*
+--
+- noSteam
+- upSteam
+- downSteam
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>310</x>
+      <y>370</y>
+      <w>120</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ENUM&gt;&gt;
+*Period*
+--
+- wholeNote
+- halfNote
+- quarterNote
+- eighthNote
+- sixteenthNote
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>320</x>
+      <y>530</y>
+      <w>100</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ENUM&gt;&gt;
+*ExtendLine*
+--
+- noLine
+- middleLine
+- lineAbove
+- lineBelow
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>750</x>
+      <y>250</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Class&gt;&gt;
+*NoteDrawer*
+--
+
+--
+_+ drawNote(note Note)_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>750</x>
+      <y>370</y>
+      <w>290</w>
+      <h>250</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Class&gt;&gt;
+*MusicScale*
+--
+_- listOfDescriptions: String[ ]_
+_- scale: ArrayList&lt;Note&gt; or LinkedHashMap_
+_- scaleWithoutHalfStep: ArrayList&lt;Note&gt;_
+--
+_+ getScale() : ArrayList&lt;Note&gt;_
+_+ quantify(frequency: Double): Note_
+
+_getKey(note: Note)_
+_getKey(freqency: Double)_
+_isHalfStep(key: int)_</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
