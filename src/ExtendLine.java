@@ -1,3 +1,3 @@
 public enum ExtendLine {
-  noLine, middleLine, lineAbove, lineBelow
+	noLine, oneLineAbove, twoLineAbove, oneLineBelow, twoLineBelow
 }

@@ -7,223 +7,242 @@ import ddf.minim.ugens.Waves;
 
 public class Theremin extends PApplet {
 
-  private static final long serialVersionUID = -279550209204634548L;
+	private static final long serialVersionUID = -279550209204634548L;
+	
+	public static final int WIDTH_THEREMIN = 700;
 
-  public Minim minim;
-  private AudioOutput out;
+	public Minim minim;
+	private AudioOutput out;
 
-  private Oscil wave;
-  private Oscil accord1;
-  private Oscil accord2;
+	private Oscil wave;
+	private Oscil accord1;
+	private Oscil accord2;
 
-  private Sensor sensor;
-  private boolean quantized;
+	private Sensor sensor;
+	private boolean quantized;
 
-  private Metronome beater;
-  private NoteDrawer noteDrawer;
-  private Background background;
+	private Metronome beater;
+	private NoteDrawer noteDrawer;
+	private Background background;
 
-  private MusicalScale musicScale;
+	private MusicalScale musicScale;
 
-  private PFont font = createFont("Arial", 25);
-  private int waveForm = 0;
+	private PFont font = createFont("Arial", 25);
+	private int waveForm = 0;
 
-  public void setup() {
+	public void setup() {
 
-    frameRate(30);
+		frameRate(30);
 
-    size(700, 300);
+		size(WIDTH_THEREMIN, 300);
 
-    minim = new Minim(this);
-    out = minim.getLineOut();
+		minim = new Minim(this);
+		out = minim.getLineOut();
 
-    wave = new Oscil(440, 0.0f, Waves.SINE);
-    accord1 = new Oscil(440, 0.0f, Waves.SINE);
-    accord2 = new Oscil(440, 0.0f, Waves.SINE);
+		wave = new Oscil(440, 0.0f, Waves.SINE);
+		accord1 = new Oscil(440, 0.0f, Waves.SINE);
+		accord2 = new Oscil(440, 0.0f, Waves.SINE);
 
-    wave.patch(out);
-    accord1.patch(out);
+		wave.patch(out);
+		accord1.patch(out);
 
-    musicScale = new MusicalScale(this);
-    MusicalScale.singleton = musicScale;
+		musicScale = new MusicalScale(this);
 
-    sensor = new Sensor(this);
+		sensor = new Sensor(this);
 
-    quantized = true;
+		quantized = true;
 
-    background = new Background(this);
-    beater = new Metronome(this, 50, 50, 70);
-    noteDrawer = new NoteDrawer(this);
+		background = new Background(this);
+		beater = new Metronome(this, 50, 50, 70);
+		noteDrawer = new NoteDrawer(this);
 
-  }
+	}
 
-  public void draw() {
-    background(255);
+	public void draw() {
+		background(255);
 
-    background.draw();
+		background.draw();
 
-    sensor.getValues();
-    // sensor.getGestures();
-    beater.draw();
-  }
+		sensor.getValues();
+		// sensor.getGestures();
+		beater.draw();
+	}
 
-  public void keyPressed() {
-    keyPressed(key);
-  }
+	public void keyPressed() {
+		keyPressed(key);
+	}
 
-  public void keyPressed(int count) {
-    switch (count) {
-    case '0':
-      wave.setWaveform(Waves.SINE);
-      break;
-    case '1':
-      wave.setWaveform(Waves.TRIANGLE);
-      break;
+	public void keyPressed(int count) {
+		switch (count) {
+		case '0':
+			wave.setWaveform(Waves.SINE);
+			break;
+		case '1':
+			wave.setWaveform(Waves.TRIANGLE);
+			break;
 
-    case '2':
-      wave.setWaveform(Waves.SAW);
-      break;
+		case '2':
+			wave.setWaveform(Waves.SAW);
+			break;
 
-    case '3':
-      wave.setWaveform(Waves.SQUARE);
-      break;
+		case '3':
+			wave.setWaveform(Waves.SQUARE);
+			break;
 
-    case '4':
-      wave.setWaveform(Waves.QUARTERPULSE);
-      break;
-    case 'q':
-      quantized = !quantized;
-      break;
+		case '4':
+			wave.setWaveform(Waves.QUARTERPULSE);
+			break;
+		case 'q':
+			quantized = !quantized;
+			break;
 
-    case '+':
-      beater.changeBeat(+5);
-      break;
+		case '+':
+			beater.changeBeat(+5);
+			break;
 
-    case '-':
-      beater.changeBeat(-5);
-      break;
+		case '-':
+			beater.changeBeat(-5);
+			break;
 
-    case 'm':
-      beater.onOffMute();
-      break;
-    case 't':
-      System.out.println("test");
-      break;
+		case 'm':
+			beater.onOffMute();
+			break;
+		case 't':
+			test();
+			break;
 
-    default:
-      break;
-    }
-  }
+		default:
+			break;
+		}
+	}
 
-  public void nextWave() {
-    waveForm = (waveForm + 6) % 5;
-    keyPressed(48 + waveForm);
-    System.out.println("Next wave: " + waveForm);
+	private void test() {
+		for (Note note : musicScale.scale.values()) {
+			if (note.getKey() == 28) {
+				noteDrawer.draw(note, NoteDrawer.BLACK);
+				System.out.println(note);
+			}
+		}
+	}
 
-  }
+	public void nextWave() {
+		waveForm = (waveForm + 6) % 5;
+		keyPressed(48 + waveForm);
+		System.out.println("Next wave: " + waveForm);
 
-  public void drawFreq() {
-    for (int i = 0; i < width - 1; ++i) {
-      point(i, height / 2 - (height * 0.49f) * wave.getWaveform().value((float) i / width));
-    }
-  }
+	}
 
-  public void drawType() {
-    for (int i = 0; i < out.bufferSize() - 1; i++) {
-      line(i, 50 - out.left.get(i) * 50, i + 1, 50 - out.left.get(i + 1) * 50);
-      line(i, 150 - out.right.get(i) * 50, i + 1, 150 - out.right.get(i + 1) * 50);
-    }
-  }
+	public void drawFreq() {
+		for (int i = 0; i < width - 1; ++i) {
+			point(i, height / 2 - (height * 0.49f) * wave.getWaveform().value((float) i / width));
+		}
+	}
 
-  public void handMoved(float left, float right, float rotate) {
-    // aplitude
-    float amp = map(left, 100, 500, 0, 1);
-    if (amp < 0)
-      amp = 0;
-    wave.setAmplitude(amp);
+	public void drawType() {
+		for (int i = 0; i < out.bufferSize() - 1; i++) {
+			line(i, 50 - out.left.get(i) * 50, i + 1, 50 - out.left.get(i + 1) * 50);
+			line(i, 150 - out.right.get(i) * 50, i + 1, 150 - out.right.get(i + 1) * 50);
+		}
+	}
 
-    // frequency
-    double freq = map(right, 200, 350, 200, 1000); // 2094
-    freq = 440d; // Test
+	public void handMoved(float left, float right, float rotate) {
+		// aplitude
+		float amp = map(left, 100, 500, 0, 1);
+		if (amp < 0)
+			amp = 0;
+		wave.setAmplitude(amp);
 
-    if (quantized)
-      freq = musicScale.quantify(freq);
+		// frequency
+		double freq = map(right, 200, 350, 200, 1000); // 2094
+		// freq = 1046; // Test c'''
+		// freq = 880; // Test a''
+		// freq = 493; // Test h'
+		// freq = 440; // Test a'
+		// freq = 261; // Test c'
+		// freq = 246; // Test h
+		// freq = 146; // Test d
+		// freq = 130; // Test c
+		// freq = 123; // Test H
+		// freq = 65; // Test C
 
-    if (freq > 91 && freq < 1100) {
+		if (quantized)
+			freq = musicScale.quantify(freq);
 
-      wave.setFrequency((float) freq);
+		if (freq > 64 && freq < 1100) {
 
-      fill(0);
-      textFont(font);
+			wave.setFrequency((float) freq);
 
-      double quantisized = musicScale.quantify(freq);
-      Note note = musicScale.scale.get(quantisized);
+			fill(0);
+			textFont(font);
 
-      handRotation(rotate, note);
+			double quantisized = musicScale.quantify(freq);
+			Note note = musicScale.scale.get(quantisized);
 
-      fill(0);
-      text(note.getDescription() + ": " + (int) freq, width / 2, 50);
-      noteDrawer.draw(note, 0);
+			handRotation(rotate, note);
 
-    } else {
-      handRotation(0, null);
-      wave.setAmplitude(0);
-    }
-  }
+			fill(0);
+			text(note.getDescription() + ": " + note.getKey(), width / 2, 50);
+			noteDrawer.draw(note, 0);
 
-  private void handRotation(float rotation, Note note) {
+		} else {
+			handRotation(0, null);
+			wave.setAmplitude(0);
+		}
+	}
 
-    if (rotation == 0 || note == null) {
-      accord1.setAmplitude(0f);
-      accord2.setAmplitude(0f);
-      return;
-    }
+	private void handRotation(float rotation, Note note) {
 
-    Note acc1 = null;
-    Note acc2 = null;
-    int ampTrans = 0;
+		if (rotation == 0 || note == null) {
+			accord1.setAmplitude(0f);
+			accord2.setAmplitude(0f);
+			return;
+		}
 
-    if (rotation > 0.7) { // Mol
-      float ampAcc = map(rotation, 0.7f, (float) Math.PI - 1.5f, 0f, 1f);
-      ampTrans = (int) map(rotation, 0.7f, (float) Math.PI - 1.5f, 255, 0);
+		Note acc1 = null;
+		Note acc2 = null;
+		int ampTrans = 0;
 
-      accord1.setAmplitude(ampAcc);
-      accord2.setAmplitude(ampAcc);
+		if (rotation > 0.7) { // Mol
+			float ampAcc = map(rotation, 0.7f, (float) Math.PI - 1.5f, 0f, 1f);
+			ampTrans = (int) map(rotation, 0.7f, (float) Math.PI - 1.5f, 255, 0);
 
-      acc1 = musicScale.NoteByDistance(note, 4);
-      acc2 = musicScale.NoteByDistance(note, 7);
+			accord1.setAmplitude(ampAcc);
+			accord2.setAmplitude(ampAcc);
 
-    } else if (rotation < 0f) { // Dur
-      float ampAcc = map(rotation, 0.0f, (float) -Math.PI + 2f, 0f, 1f);
-      ampTrans = (int) map(rotation, 0.0f, (float) -Math.PI + 2f, 255, 0);
+			acc1 = musicScale.NoteByDistance(note, 4);
+			acc2 = musicScale.NoteByDistance(note, 7);
 
-      accord1.setAmplitude(ampAcc);
-      accord2.setAmplitude(ampAcc);
+		} else if (rotation < 0f) { // Dur
+			float ampAcc = map(rotation, 0.0f, (float) -Math.PI + 2f, 0f, 1f);
+			ampTrans = (int) map(rotation, 0.0f, (float) -Math.PI + 2f, 255, 0);
 
-      acc1 = musicScale.NoteByDistance(note, 3);
-      acc2 = musicScale.NoteByDistance(note, 7);
+			accord1.setAmplitude(ampAcc);
+			accord2.setAmplitude(ampAcc);
 
-    } else {
-      accord1.setAmplitude(0f);
-      accord2.setAmplitude(0f);
-      return;
-    }
+			acc1 = musicScale.NoteByDistance(note, 3);
+			acc2 = musicScale.NoteByDistance(note, 7);
 
-    accord1.setFrequency(new Float(acc1.getFreqencey()));
-    accord2.setFrequency(new Float(acc2.getFreqencey()));
+		} else {
+			accord1.setAmplitude(0f);
+			accord2.setAmplitude(0f);
+			return;
+		}
 
-    noteDrawer.draw(acc1, (int) ampTrans);
-    noteDrawer.draw(acc2, (int) ampTrans);
+		accord1.setFrequency(new Float(acc1.getFreqencey()));
+		accord2.setFrequency(new Float(acc2.getFreqencey()));
 
-  }
+		noteDrawer.draw(acc1, (int) ampTrans);
+		noteDrawer.draw(acc2, (int) ampTrans);
 
-  static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "Theremin" };
-    if (passedArgs != null) {
-      PApplet.main(concat(appletArgs, passedArgs));
-    } else {
-      PApplet.main(appletArgs);
-    }
-  }
+	}
+
+	static public void main(String[] passedArgs) {
+		String[] appletArgs = new String[] { "Theremin" };
+		if (passedArgs != null) {
+			PApplet.main(concat(appletArgs, passedArgs));
+		} else {
+			PApplet.main(appletArgs);
+		}
+	}
 
 }

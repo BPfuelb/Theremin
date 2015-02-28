@@ -1,113 +1,153 @@
 public class Note {
 
-  private int posX;
-  private int posY;
-  private int key;
-  private Double freqencey;
-  private String description;
-  private boolean isHalftone;
+	private int posX;
+	private int posY;
+	private int key;
+	private Double freqencey;
+	private String description;
+	private boolean isHalftone;
 
-  private Steam steam;
-  private Period period;
-  private ExtendLine extendLine;
+	private Steam steam;
+	private Period period;
+	private ExtendLine extendLine;
 
-  public Note(double freqencey, String description) {
-    setPosX(200);
-    setPosY(0);
+	public Note(double freqencey, String description) {
+		setPosX(Theremin.WIDTH_THEREMIN - 100);
+		setPosY(0);
 
-    setFrequence(freqencey);
-    setDescription(description);
+		setFrequence(freqencey);
+		setDescription(description);
 
-    setKey(freqencey);
-    setHalftone(key);
-    setSteam();
-    setPeriod();
-    setLine();
-  }
+		setKey(freqencey);
+		setHalftone(key);
+		setSteam();
+		setPeriod();
+		setLine();
+	}
 
-  public Double getFreqencey() {
-    return freqencey;
-  }
-  
-    public String getDescription() {
-    return description;
-  }
+	public Double getFreqencey() {
+		return freqencey;
+	}
 
-  public int getKey() {
-    return key;
-  }
+	public String getDescription() {
+		return description;
+	}
 
-  public boolean IsHalftone() {
-    return isHalftone;
-  }
+	public int getKey() {
+		return key;
+	}
 
-  public Period getPeriod() {
-    return period;
-  }
+	public boolean IsHalftone() {
+		return isHalftone;
+	}
 
-  public Steam getSteam() {
-    return steam;
-  }
+	public Period getPeriod() {
+		return period;
+	}
 
-  public ExtendLine getLine() {
-    return extendLine;
-  }
+	public Steam getSteam() {
+		return steam;
+	}
 
-  public int getPosX() {
-    return posX;
-  }
+	public ExtendLine getLine() {
+		return extendLine;
+	}
 
-  public int getPosY() {
-    return posY;
-  }
+	public int getPosX() {
+		return posX;
+	}
 
-  public void increasePosY() {
-    posY++;
-  }
+	public int getPosY() {
+		return posY;
+	}
 
-  public void setPosX(int posX) {
-    if (posX < 0 || posX > 1000)
-      throw new IllegalArgumentException("posX out of range");
-    this.posX = posX;
-  }
+	public void increasePosY() {
+		posY++;
+	}
 
-  public void setPosY(int posY) {
-    if (posY < 0 || posY > 1000)
-      throw new IllegalArgumentException("posY out of range");
-    this.posY = posY;
-  }
+	public void setPosX(int posX) {
+		if (posX < 0 || posX > 1000)
+			throw new IllegalArgumentException("posX out of range");
+		this.posX = posX;
+	}
 
-  private void setFrequence(double freqence) {
-    if (freqence <= 0 || freqence > 16000)
-      throw new IllegalArgumentException("freqence out of range");
-    this.freqencey = freqence;
-  }
+	public void setPosY(int posY) {
+		if (posY < 0 || posY > 1000)
+			throw new IllegalArgumentException("posY out of range");
+		this.posY = posY;
+	}
 
-  private void setDescription(String description) {
-    if (description == null)
-      throw new NullPointerException("description should not be null");
-    this.description = description;
-  }
+	private void setFrequence(double freqence) {
+		if (freqence <= 0 || freqence > 16000)
+			throw new IllegalArgumentException("freqence out of range");
+		this.freqencey = freqence;
+	}
 
-  private void setKey(Double frequency) {
-    if (frequency <= 0 || frequency > 16000)
-      throw new IllegalArgumentException("freqence out of range");
-    key = MusicalScale.getKeyToFreqency(frequency);
-  }
+	private void setDescription(String description) {
+		if (description == null)
+			throw new NullPointerException("description should not be null");
+		this.description = description;
+	}
 
-  private void setHalftone(int key) {
-    isHalftone = MusicalScale.isNoteHalfStep(key);
-  }
+	private void setKey(Double frequency) {
+		if (frequency <= 0 || frequency > 16000)
+			throw new IllegalArgumentException("freqence out of range");
+		key = MusicalScale.getKeyToFreqency(frequency);
+	}
 
-  private void setSteam() {
-    steam = Steam.upSteam;
-  }
+	private void setHalftone(int key) {
+		isHalftone = MusicalScale.isNoteHalfStep(key);
+	}
 
-  private void setPeriod() {
-    period = Period.sixteenthNote;
-  }
+	public void setSteam() {
+		int key = getKey();
 
-  private void setLine() {
-    extendLine = ExtendLine.noLine;
-  }
+		if (key >= 40) {
+			if (key < 50)
+				steam = Steam.upSteam;
+			else
+				steam = Steam.downSteam;
+		} else {
+			if (key > 30)
+				steam = Steam.downSteam;
+			else
+				steam = Steam.upSteam;
+		}
+	}
+
+	private void setPeriod() {
+		period = Period.quarterNote;
+	}
+
+	private void setLine() {
+
+		if (key >= 64) {
+			extendLine = ExtendLine.twoLineAbove;
+		} else if (key >= 61) {
+			extendLine = ExtendLine.oneLineAbove;
+		} else if (key >= 40 && key <= 41) {
+			extendLine = ExtendLine.oneLineBelow;
+		} else if (key <= 17) {
+			extendLine = ExtendLine.twoLineBelow;
+		} else if (key <= 20) {
+			extendLine = ExtendLine.oneLineBelow;
+		} else
+			extendLine = ExtendLine.noLine;
+
+	}
+
+	@Override
+	public String toString() {
+		String note = "";
+		note += "posX/Y:(" + posX + " , " + posY + ")\n";
+		note += "key: " + key + "\n";
+		note += "freqency: " + freqencey + "\n";
+		note += "description: " + description + "\n";
+		note += "isHalfTone: " + (isHalftone ? "true" : "false") + "\n";
+		note += "steam: " + steam.name() + "\n";
+		note += "period: " + period.name() + "\n";
+		note += "Line: " + extendLine.name() + "\n";
+		return note;
+	}
+
 }
