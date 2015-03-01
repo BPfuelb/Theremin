@@ -21,24 +21,11 @@ public class Background {
 
 		parent.image(violin, 10, VIOLINPOS + 8);
 
-		// Oben
-		// parent.strokeWeight(0.1f);
-		// for (int i = 0; i < 2; i++) {
-		// parent.line(0, i * 10 + violinPos, parent.width, i * 10 + violinPos);
-		// }
-
-		// Mitte
 		parent.strokeWeight(1);
 		for (int i = 0; i < 5; i++) {
 			parent.line(5, i * 10 + VIOLINPOS + 20, parent.width - 5, i * 10 + VIOLINPOS + 20);
 		}
 
-		// Unten
-		// parent.strokeWeight(0.1f);
-		// for (int i = 0; i < 2; i++) {
-		// parent.line(0, i * 10 + violinPos + 20 + 50, parent.width, i * 10 +
-		// violinPos + 20 + 50);
-		// }
 	}
 
 	private void drawBass() {
@@ -46,24 +33,11 @@ public class Background {
 
 		parent.image(bass, 0, BASSPOS + 19);
 
-		// Oben
-		// parent.strokeWeight(0.1f);
-		// for (int i = 0; i < 2; i++) {
-		// parent.line(0, i * 10 + bassPos, parent.width, i * 10 + bassPos);
-		// }
-
-		// Mitte
 		parent.strokeWeight(1);
 		for (int i = 0; i < 5; i++) {
 			parent.line(5, i * 10 + BASSPOS + 20, parent.width - 5, i * 10 + BASSPOS + 20);
 		}
 
-		// Unten
-		// parent.strokeWeight(0.1f);
-		// for (int i = 0; i < 2; i++) {
-		// parent.line(0, i * 10 + bassPos + 20 + 50, parent.width, i * 10 +
-		// bassPos + 20 + 50);
-		// }
 	}
 
 	public void draw() {
@@ -72,6 +46,8 @@ public class Background {
 
 		parent.line(5, VIOLINPOS + 20, 5, BASSPOS + 60);
 		parent.line(parent.width - 5, VIOLINPOS + 20, parent.width - 5, BASSPOS + 60);
+		
+		parent.clavier.drawBoard();
 	}
 
 }
