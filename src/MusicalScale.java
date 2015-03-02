@@ -58,6 +58,15 @@ public class MusicalScale {
     return 0;
   }
 
+  public double quantifyOnlyHalftone(double currentFreqency) {
+    for (Double frequency : scaleWithoutHalfStep) {
+      if (frequency >= currentFreqency) {
+        return frequency;
+      }
+    }
+    return 0;
+  }
+
   public static int getKeyToFreqency(Double frequency) {
     double key = ((Math.log(frequency / 440d) / Math.log(2)) * 12d + 49d);
     int returnKey = new Double(key).intValue();

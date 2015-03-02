@@ -18,14 +18,11 @@ public class Theremin extends PApplet {
   private Oscil accord1;
   private Oscil accord2;
 
-  private Sensor sensor;
-  private boolean quantized;
+  public boolean quantized;
   public boolean mouseHands;
-  private boolean halfTone;
-  // TODO No HalfTone
-  // Why no whole and half Notes
-  // Quantisiert anzeigen
+  public boolean onlyHalfTone;
 
+  private Sensor sensor;
   private Metronome metronom;
   private NoteDrawer noteDrawer;
   private Background background;
@@ -34,7 +31,6 @@ public class Theremin extends PApplet {
   public Clavier clavier;
 
   private PFont font25 = createFont("Arial", 25);
-  private PFont font40 = createFont("Arial", 40);
 
   private int waveForm = 0;
   private Note currentNote = null;
@@ -62,7 +58,7 @@ public class Theremin extends PApplet {
 
     quantized = true;
     mouseHands = true;
-    halfTone = false;
+    onlyHalfTone = false;
 
     background = new Background(this);
     metronom = new Metronome(this, 50, 50, 70);
@@ -96,35 +92,33 @@ public class Theremin extends PApplet {
 
   public void keyPressed(int count) {
     switch (count) {
-    case '0':
+    case '1':
       wave.setWaveform(Waves.SINE);
       break;
-    case '1':
+    case '2':
       wave.setWaveform(Waves.TRIANGLE);
       break;
-
-    case '2':
+    case '3':
       wave.setWaveform(Waves.SAW);
       break;
-
-    case '3':
+    case '4':
       wave.setWaveform(Waves.SQUARE);
       break;
-
-    case '4':
+    case '5':
       wave.setWaveform(Waves.QUARTERPULSE);
       break;
+      
     case 'q':
       quantized = !quantized;
       break;
-
+    case 'h':
+      onlyHalfTone = !onlyHalfTone;
+      break;
     case '+':
       if (metronom()) {
         fill(0);
         metronom.changeBeat(+5);
         noteRecorder.changeBeat(+5);
-        textFont(font40);
-        text("+", 90, 57);
       }
       break;
 
@@ -133,8 +127,6 @@ public class Theremin extends PApplet {
         fill(0);
         metronom.changeBeat(-5);
         noteRecorder.changeBeat(-5);
-        textFont(font40);
-        text("-", 95, 75);
       }
       break;
 
@@ -198,8 +190,12 @@ public class Theremin extends PApplet {
     // freq = 65; // Test C
 
     // frequency
-    if (quantized)
-      freq = musicScale.quantify(freq);
+    if (quantized) {
+      if (onlyHalfTone)
+        freq = musicScale.quantifyOnlyHalftone(freq);
+      else
+        freq = musicScale.quantify(freq);
+    }
 
     if (freq > 64 && freq < 1100) {
 
@@ -325,7 +321,6 @@ public class Theremin extends PApplet {
     if (lastNote == null)
       lastNote = currentNote;
     if (currentNote != null) {
-
       if (currentNote.getKey() != lastNote.getKey()) {
         noteRecorder.addNote(currentNote);
         lastNote = currentNote;
@@ -336,7 +331,7 @@ public class Theremin extends PApplet {
         // currentNote = null;
       }
     }
-
+    // System.out.println(currentNote);
   }
 
   static public void main(String[] passedArgs) {

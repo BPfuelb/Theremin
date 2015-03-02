@@ -21,7 +21,20 @@ public class Background {
 
     font20 = parent.createFont("Arial", 20);
     font10 = parent.createFont("Arial", 10);
+  }
 
+  public void draw() {
+    drawViolin();
+    drawBass();
+
+    parent.line(5, VIOLINPOS + 20, 5, BASSPOS + 60);
+    parent.line(parent.width - 5, VIOLINPOS + 20, parent.width - 5, BASSPOS + 60);
+
+    parent.clavier.drawBoard();
+
+    drawMouseHand();
+    drawQuant();
+    drawNoHalf();
   }
 
   private void drawViolin() {
@@ -48,27 +61,7 @@ public class Background {
 
   }
 
-  public void draw() {
-    drawViolin();
-    drawBass();
-
-    parent.line(5, VIOLINPOS + 20, 5, BASSPOS + 60);
-    parent.line(parent.width - 5, VIOLINPOS + 20, parent.width - 5, BASSPOS + 60);
-
-    parent.clavier.drawBoard();
-    
-    parent.textFont(font20);
-    if (!parent.metronom()) {
-      parent.text("M", 10, 20);
-      parent.textFont(font10);
-      parent.text("(etronom)", 26, 20);
-    }
-    else
-    {
-      parent.text("+", 96, 50);
-      parent.text("-", 98, 70);
-    }
-
+  private void drawMouseHand() {
     parent.textFont(font20);
     parent.text("P", 640, parent.height - 10);
 
@@ -81,8 +74,28 @@ public class Background {
       parent.line(600, parent.height - 35, 635, parent.height - 5);
   }
 
-  public void toggleMouseHand() {
+  private void drawQuant() {
+    parent.textFont(font20);
+    parent.text("Q", 630, 20);
 
+    parent.textFont(font10);
+    parent.text("(uantised)", 645, 20);
+
+    if (!parent.quantized) {
+      parent.line(630, 5, 645, 20);
+    }
+  }
+
+  private void drawNoHalf() {
+    parent.textFont(font20);
+    parent.text("H", 630, 50);
+
+    parent.textFont(font10);
+    parent.text("(alfstep)", 645, 50);
+
+    if (!parent.onlyHalfTone) {
+      parent.line(630, 35, 645, 50);
+    }
   }
 
 }

@@ -28,23 +28,20 @@ public class NoteRecorder implements OnBeat {
   }
 
   public void noteListUpdate() {
-
     noteDisplay.parallelStream().forEach(f -> f.increasePosYVal(beat / 20));
 
     for (Note note : noteDisplay) {
-      // note.increasePosYVal(beat / 15);
-
+//      System.out.println(note);
       if (note.getPosX() < 50)
         noteDisplay.remove(note);
-
     }
   }
 
   public void changeBeat(int change) {
     if (beat + change >= 60 && beat + change <= 200) {
       beat += change;
-      collectorBeat.changeBeat(60000 / (beat));
-      System.out.println("Metronom:" + beat);
+      collectorBeat.changeBeat(60000 / (beat / 4));
+//      System.out.println("Metronom:" + beat);
     }
   }
 

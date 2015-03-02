@@ -1,12 +1,13 @@
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PFont;
 import ddf.minim.AudioInput;
 import ddf.minim.AudioPlayer;
 
 public class Metronome implements OnBeat {
 
-  private final static int black = 0;
-  private final static int white = 255;
+  private final static int BLACK = 0;
+  private final static int WHITE = 255;
 
   private Theremin parent;
   private int posX, posY;
@@ -19,6 +20,7 @@ public class Metronome implements OnBeat {
 
   public boolean onOff;
   private boolean mute;
+  private PFont font40, font20, font10;
 
   private ClockGenerator metronome;
   AudioPlayer player;
@@ -43,29 +45,33 @@ public class Metronome implements OnBeat {
     metronomThread = new Thread(metronome);
     metronomThread.setName("MetronomThread");
     metronomThread.start();
+
+    font40 = parent.createFont("Arial", 40);
+    font20 = parent.createFont("Arial", 20);
+    font10 = parent.createFont("Arial", 10);
   }
 
   public void draw() {
     if (onOff) {
 
       if (toggleColor)
-        parent.g.fill(black);
+        parent.g.fill(BLACK);
       else
-        parent.g.fill(white);
+        parent.g.fill(WHITE);
 
       parent.g.ellipse(posX, posY, scale, scale);
 
       if (toggleColor)
-        parent.g.fill(white);
+        parent.g.fill(WHITE);
       else
-        parent.g.fill(black);
+        parent.g.fill(BLACK);
 
       parent.g.arc((float) posX, (float) posY, scale - 1, scale - 1, (float) Math.PI / 2f, fill, PConstants.PIE);
 
-      parent.g.fill(0);
+      parent.g.fill(BLACK);
       parent.g.ellipse(posX, posY, scale / 2, scale / 2);
 
-      parent.g.fill(255);
+      parent.g.fill(WHITE);
       parent.g.textFont(parent.createFont("Arial", scale / 5));
 
       int beatsPerMinute = (int) (60000 / metronome.getTimer());
@@ -74,6 +80,17 @@ public class Metronome implements OnBeat {
 
       // empty the bar
       fill -= (2 * Math.PI) / ((60000 / beat) / (1000 / 30));
+      
+      parent.g.fill(BLACK);
+      parent.text("+", 96, 50);
+      parent.text("-", 98, 70);
+      
+    } else {
+      parent.g.fill(BLACK);
+      parent.textFont(font20);
+      parent.text("M", 10, 20);
+      parent.textFont(font10);
+      parent.text("(etronom)", 26, 20);
     }
   }
 
@@ -94,6 +111,12 @@ public class Metronome implements OnBeat {
       beat += change;
       metronome.changeBeat(60000 / beat);
       // System.out.println("Metronom:" + beat);
+      parent.textFont(font40);
+
+      if (change < 0)
+        parent.text("-", 95, 77);
+      else
+        parent.text("+", 90, 59);
     }
   }
 
