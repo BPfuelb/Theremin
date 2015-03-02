@@ -24,6 +24,7 @@ public class Theremin extends PApplet {
   private boolean halfTone;
   // TODO No HalfTone
   // Why no whole and half Notes
+  // Quantisiert anzeigen
 
   private Metronome metronom;
   private NoteDrawer noteDrawer;
@@ -32,7 +33,9 @@ public class Theremin extends PApplet {
   public MusicalScale musicScale;
   public Clavier clavier;
 
-  private PFont font = createFont("Arial", 25);
+  private PFont font25 = createFont("Arial", 25);
+  private PFont font40 = createFont("Arial", 40);
+
   private int waveForm = 0;
   private Note currentNote = null;
   private Note lastNote = null;
@@ -116,13 +119,23 @@ public class Theremin extends PApplet {
       break;
 
     case '+':
-      metronom.changeBeat(+5);
-      noteRecorder.changeBeat(+5);
+      if (metronom()) {
+        fill(0);
+        metronom.changeBeat(+5);
+        noteRecorder.changeBeat(+5);
+        textFont(font40);
+        text("+", 90, 57);
+      }
       break;
 
     case '-':
-      metronom.changeBeat(-5);
-      noteRecorder.changeBeat(-5);
+      if (metronom()) {
+        fill(0);
+        metronom.changeBeat(-5);
+        noteRecorder.changeBeat(-5);
+        textFont(font40);
+        text("-", 95, 75);
+      }
       break;
 
     case 'm':
@@ -193,7 +206,7 @@ public class Theremin extends PApplet {
       wave.setFrequency((float) freq);
 
       fill(0);
-      textFont(font);
+      textFont(font25);
 
       double quantisized = musicScale.quantify(freq);
       Note note = musicScale.scale.get(quantisized);

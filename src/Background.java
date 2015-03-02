@@ -63,6 +63,11 @@ public class Background {
       parent.textFont(font10);
       parent.text("(etronom)", 26, 20);
     }
+    else
+    {
+      parent.text("+", 96, 50);
+      parent.text("-", 98, 70);
+    }
 
     parent.textFont(font20);
     parent.text("P", 640, parent.height - 10);

@@ -93,14 +93,14 @@ public class Metronome implements OnBeat {
     if (beat + change >= 60 && beat + change <= 200) {
       beat += change;
       metronome.changeBeat(60000 / beat);
-      System.out.println("Metronom:" + beat);
+      // System.out.println("Metronom:" + beat);
     }
   }
 
   public void onOffMute() {
     if (onOff) { // if on
       if (!mute) { // and note mute
-        mute = true; 
+        mute = true;
       } else { // if on and mute
         metronome.pause();
         onOff = false;
