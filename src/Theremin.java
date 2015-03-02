@@ -1,5 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.event.MouseEvent;
 import ddf.minim.AudioOutput;
 import ddf.minim.Minim;
 import ddf.minim.ugens.Oscil;
@@ -8,7 +9,6 @@ import ddf.minim.ugens.Waves;
 public class Theremin extends PApplet {
 
   private static final long serialVersionUID = -279550209204634548L;
-
   public static final int WIDTH_THEREMIN = 700;
 
   public Minim minim;
@@ -20,25 +20,27 @@ public class Theremin extends PApplet {
 
   private Sensor sensor;
   private boolean quantized;
+  public boolean mouseHands;
+  private boolean halfTone;
+  // TODO No HalfTone
+  // Why no whole and half Notes
 
-  private Metronome beater;
+  private Metronome metronom;
   private NoteDrawer noteDrawer;
   private Background background;
   private NoteRecorder noteRecorder;
   public MusicalScale musicScale;
-
   public Clavier clavier;
 
   private PFont font = createFont("Arial", 25);
   private int waveForm = 0;
-
   private Note currentNote = null;
   private Note lastNote = null;
+  private float mouseRotation = 0;
 
   public void setup() {
 
     frameRate(30);
-
     size(WIDTH_THEREMIN, 300);
 
     minim = new Minim(this);
@@ -56,13 +58,15 @@ public class Theremin extends PApplet {
     sensor = new Sensor(this);
 
     quantized = true;
+    mouseHands = true;
+    halfTone = false;
 
     background = new Background(this);
-    beater = new Metronome(this, 50, 50, 70);
+    metronom = new Metronome(this, 50, 50, 70);
     noteDrawer = new NoteDrawer(this);
     noteRecorder = new NoteRecorder(this);
-
     clavier = new Clavier(this, 55, 0);
+
   }
 
   public void draw() {
@@ -70,10 +74,13 @@ public class Theremin extends PApplet {
 
     background.draw();
 
-    sensor.getValues();
-    mouseMoved(mouseX, height - mouseY, 0.6f);
+    if (mouseHands) {
+      mouseMoved(mouseX, height - mouseY, 0.6f);
+    } else
+      sensor.getValues();
     // sensor.getGestures();
-    beater.draw();
+
+    metronom.draw();
 
     noteRecorder.drawAll();
     noteRecorder.noteListUpdate();
@@ -109,22 +116,24 @@ public class Theremin extends PApplet {
       break;
 
     case '+':
-      beater.changeBeat(+5);
+      metronom.changeBeat(+5);
       noteRecorder.changeBeat(+5);
       break;
 
     case '-':
-      beater.changeBeat(-5);
+      metronom.changeBeat(-5);
       noteRecorder.changeBeat(-5);
       break;
 
     case 'm':
-      beater.onOffMute();
+      metronom.onOffMute();
       break;
     case 't':
       test();
       break;
-
+    case 'p':
+      mouseHands = !mouseHands;
+      move(0.0f, 0.0f, 0.0f);
     default:
       break;
     }
@@ -155,65 +164,11 @@ public class Theremin extends PApplet {
     }
   }
 
-  public void mouseMoved(float left, float right, float rotate) {
+  private void move(float amp, double freq, float rotate) {
     // aplitude
-    float amp = map(left, 100, 500, 0, 1);
     if (amp < 0)
       amp = 0;
     wave.setAmplitude(amp);
-
-    // frequency
-    double freq = map(right, 200, 350, 200, 1000); // 2094
-
-    if (quantized)
-      freq = musicScale.quantify(freq);
-
-    if (freq > 64 && freq < 1100) {
-
-      wave.setFrequency((float) freq);
-
-      fill(0);
-      textFont(font);
-
-      double quantisized = musicScale.quantify(freq);
-      Note note = musicScale.scale.get(quantisized);
-
-      if (currentNote == null) {
-        currentNote = note.clone();
-      }
-
-      if (note.getKey() != currentNote.getKey()) {
-        // noteRecorder.addNote(currentNote);
-        currentNote = note.clone();
-      }
-
-      handRotation(rotate, note);
-
-      fill(0);
-      text(note.getDescription(), width / 2 - 50, 200);
-      noteDrawer.draw(currentNote, 0);
-
-      clavier.draw(currentNote.getKey());
-
-    } else {
-      currentNote = null;
-      handRotation(0, null);
-      wave.setAmplitude(0);
-    }
-  }
-
-  public void handMoved(float left, float right, float rotate) {
-    // aplitude
-    float amp = map(left, 100, 500, 0, 1);
-    if (amp < 0)
-      amp = 0;
-    wave.setAmplitude(amp);
-
-    if (right <= 199 || right >= 350)
-      return;
-
-    // frequency
-    double freq = map(right, 200, 350, 200, 1000); // 2094
 
     // freq = 1046; // Test c'''
     // freq = 880; // Test a''
@@ -227,9 +182,9 @@ public class Theremin extends PApplet {
     // freq = 82; // Test E
     // freq = 73; // Test D
     // freq = 77; // Test DIS/ES
-
     // freq = 65; // Test C
 
+    // frequency
     if (quantized)
       freq = musicScale.quantify(freq);
 
@@ -243,29 +198,57 @@ public class Theremin extends PApplet {
       double quantisized = musicScale.quantify(freq);
       Note note = musicScale.scale.get(quantisized);
 
-      if (currentNote == null) {
+      if (currentNote == null)
         currentNote = note.clone();
-      }
 
-      if (note.getKey() != currentNote.getKey()) {
-        // noteRecorder.addNote(currentNote);
+      if (note.getKey() != currentNote.getKey())
         currentNote = note.clone();
-      }
 
-      handRotation(rotate, note);
+      rotation(rotate, currentNote);
 
       fill(0);
-      // text(note.getDescription() , width / 2, 400);
+      text(note.getDescription(), width / 2 - 50, 200);
       noteDrawer.draw(currentNote, 0);
+      clavier.draw(currentNote.getKey());
 
     } else {
       currentNote = null;
-      handRotation(0, null);
+      rotation(0, null);
       wave.setAmplitude(0);
     }
+
   }
 
-  private void handRotation(float rotation, Note note) {
+  private void mouseMoved(float left, float right, float rotate) {
+    // aplitude
+    float amp = map(left, 100, 600, 0, 1);
+
+    // frequency
+    double freq = map(right, 50, 250, 200, 1000); // 2094
+
+    move(amp, freq, mouseRotation);
+  }
+
+  public void mouseWheel(MouseEvent event) {
+    if (event.getCount() > 0)
+      mouseRotation += 0.1;
+    else
+      mouseRotation -= 0.1;
+
+    System.out.println(mouseRotation);
+  }
+
+  public void handMoved(float left, float right, float rotate) {
+    // aplitude
+    float amp = map(left, 100, 500, 0, 1);
+
+    // frequency
+    double freq = map(right, 150, 400, 200, 1000); // 2094
+
+    move(amp, freq, rotate);
+  }
+
+  private void rotation(float rotation, Note note) {
 
     if (rotation == 0 || note == null) {
       accord1.setAmplitude(0f);
@@ -311,19 +294,6 @@ public class Theremin extends PApplet {
 
   }
 
-  public Note getCurrentNote() {
-    return currentNote;
-  }
-
-  static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "Theremin" };
-    if (passedArgs != null) {
-      PApplet.main(concat(appletArgs, passedArgs));
-    } else {
-      PApplet.main(appletArgs);
-    }
-  }
-
   public NoteDrawer getNoteDrawer() {
     return noteDrawer;
   }
@@ -331,6 +301,11 @@ public class Theremin extends PApplet {
   public void increaseNote() {
     if (currentNote != null)
       currentNote.increase();
+  }
+
+  public boolean metronom() {
+
+    return metronom.onOff;
   }
 
   public void recordNote() {
@@ -341,13 +316,22 @@ public class Theremin extends PApplet {
       if (currentNote.getKey() != lastNote.getKey()) {
         noteRecorder.addNote(currentNote);
         lastNote = currentNote;
-        currentNote = null;
+        // currentNote = null;
       } else if (currentNote.getPeriod() == Period.wholeNote) {
         noteRecorder.addNote(currentNote);
         lastNote = null;
-        currentNote = null;
+        // currentNote = null;
       }
     }
 
+  }
+
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "Theremin" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
   }
 }

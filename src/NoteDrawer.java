@@ -22,6 +22,12 @@ public class NoteDrawer {
 
   public void draw(Note note, int transparency) {
 
+    
+    if (transparency > 255)
+      transparency = 255;
+    if (transparency < 0)
+      transparency = 0;
+    
     if (transparency >= 0 && transparency <= 255)
       parent.fill(transparency);
 

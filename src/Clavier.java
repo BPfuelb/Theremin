@@ -45,6 +45,8 @@ public class Clavier {
         parent.rect(key.x, 0, 6, key.height);
       } else {
         parent.noFill();
+        if (key.key == 49)
+          parent.fill(0, 255, 0);
         parent.rect(key.x, 0, 12, key.height);
       }
       parent.noFill();
@@ -63,7 +65,7 @@ public class Clavier {
     }
   }
 
-  public int calcPosition(Note note) {
+  private int calcPosition(Note note) {
 
     int key = note.getKey();
     int pos = 0;

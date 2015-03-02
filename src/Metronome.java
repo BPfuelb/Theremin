@@ -17,7 +17,7 @@ public class Metronome implements OnBeat {
 
   private boolean toggleColor = true;
 
-  private boolean onOff;
+  public boolean onOff;
   private boolean mute;
 
   private ClockGenerator metronome;

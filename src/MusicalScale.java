@@ -36,18 +36,11 @@ public class MusicalScale {
 
       scale.put(frequency, newNote);
 
-      // System.out.println("F: " + frequency + " |Key: " + newNote.getKey() + " |Halbton: " + (newNote.IsHalftone() ? "Ja" : "Nein"));
-
       if (!newNote.IsHalftone()) {
         scaleWithoutHalfStep.add(newNote.getFreqencey());
         scaleWithoutHalfStep2.add(newNote);
       }
     }
-
-    // int k = 0;
-    // for (int j = 9; j <= 11; j++) {
-    // System.out.println(j + " Freq: " + scaleWithoutHalfStep.get(j));
-    // }
 
     for (Note note : scale.values()) {
       calcPosition(note, parent);
