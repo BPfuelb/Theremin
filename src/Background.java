@@ -28,7 +28,7 @@ public class Background {
     drawBass();
 
     parent.line(5, VIOLINPOS + 20, 5, BASSPOS + 60);
-    parent.line(parent.width - 5, VIOLINPOS + 20, parent.width - 5, BASSPOS + 60);
+    parent.line(695, VIOLINPOS + 20, 695, BASSPOS + 60);
 
     parent.clavier.drawBoard();
 
@@ -44,7 +44,7 @@ public class Background {
 
     parent.strokeWeight(1);
     for (int i = 0; i < 5; i++) {
-      parent.line(5, i * 10 + VIOLINPOS + 20, parent.width - 5, i * 10 + VIOLINPOS + 20);
+      parent.line(5, i * 10 + VIOLINPOS + 20, 695, i * 10 + VIOLINPOS + 20);
     }
 
   }
@@ -56,14 +56,14 @@ public class Background {
 
     parent.strokeWeight(1);
     for (int i = 0; i < 5; i++) {
-      parent.line(5, i * 10 + BASSPOS + 20, parent.width - 5, i * 10 + BASSPOS + 20);
+      parent.line(5, i * 10 + BASSPOS + 20, 695, i * 10 + BASSPOS + 20);
     }
 
   }
 
   private void drawMouseHand() {
     parent.textFont(font20);
-    parent.text("P", 640, parent.height - 10);
+    parent.text("I", 640, parent.height - 10);
 
     parent.image(hand, 660, parent.height - 40);
     parent.image(mouse, 600, parent.height - 30);

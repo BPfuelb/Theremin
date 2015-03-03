@@ -9,10 +9,11 @@ import ddf.minim.ugens.Waves;
 public class Theremin extends PApplet {
 
   private static final long serialVersionUID = -279550209204634548L;
-  public static final int WIDTH_THEREMIN = 700;
+  public static final int WIDTH_THEREMIN = 900;
+  public static final int HEIGHT_THEREMIN = 300;
 
   public Minim minim;
-  private AudioOutput out;
+  public AudioOutput out;
 
   private Oscil wave;
   private Oscil accord1;
@@ -27,6 +28,8 @@ public class Theremin extends PApplet {
   private NoteDrawer noteDrawer;
   private Background background;
   private NoteRecorder noteRecorder;
+  private Recorder recorder;
+
   public MusicalScale musicScale;
   public Clavier clavier;
 
@@ -40,10 +43,10 @@ public class Theremin extends PApplet {
   public void setup() {
 
     frameRate(30);
-    size(WIDTH_THEREMIN, 300);
+    size(WIDTH_THEREMIN, HEIGHT_THEREMIN);
 
     minim = new Minim(this);
-    out = minim.getLineOut();
+    out = minim.getLineOut(Minim.STEREO, 512);
 
     wave = new Oscil(440, 0.0f, Waves.SINE);
     accord1 = new Oscil(440, 0.0f, Waves.SINE);
@@ -51,6 +54,7 @@ public class Theremin extends PApplet {
 
     wave.patch(out);
     accord1.patch(out);
+    accord2.patch(out);
 
     musicScale = new MusicalScale(this);
 
@@ -65,7 +69,7 @@ public class Theremin extends PApplet {
     noteDrawer = new NoteDrawer(this);
     noteRecorder = new NoteRecorder(this);
     clavier = new Clavier(this, 55, 0);
-
+    recorder = new Recorder(this, 720, 10);
   }
 
   public void draw() {
@@ -84,6 +88,8 @@ public class Theremin extends PApplet {
     noteRecorder.drawAll();
     noteRecorder.noteListUpdate();
 
+    recorder.draw();
+    drawType(20, height-30);
   }
 
   public void keyPressed() {
@@ -93,21 +99,21 @@ public class Theremin extends PApplet {
   public void keyPressed(int count) {
     switch (count) {
     case '1':
-      wave.setWaveform(Waves.SINE);
+      recorder.setSelected(4);
       break;
     case '2':
-      wave.setWaveform(Waves.TRIANGLE);
+      recorder.setSelected(3);
       break;
     case '3':
-      wave.setWaveform(Waves.SAW);
+      recorder.setSelected(2);
       break;
     case '4':
-      wave.setWaveform(Waves.SQUARE);
+      recorder.setSelected(1);
       break;
     case '5':
-      wave.setWaveform(Waves.QUARTERPULSE);
+      recorder.setSelected(0);
       break;
-      
+
     case 'q':
       quantized = !quantized;
       break;
@@ -133,36 +139,75 @@ public class Theremin extends PApplet {
     case 'm':
       metronom.onOffMute();
       break;
-    case 't':
-      test();
+    case 'w':
+      nextWave();
       break;
-    case 'p':
+    case 'i':
       mouseHands = !mouseHands;
       move(0.0f, 0.0f, 0.0f);
+    case 'r':
+      recorder.beginRecord();
+      break;
+    case 's':
+      recorder.endRecord();
+      break;
+    case 'p':
+      recorder.startPauseLoop();
+      break;
+    case 'd':
+      recorder.removePlayer();
+      break;
     default:
       break;
     }
   }
 
-  private void test() {
-
-    // handMoved(400, 245, 0.6f);
-  }
 
   public void nextWave() {
-    waveForm = (waveForm + 6) % 5;
-    keyPressed(48 + waveForm);
-    System.out.println("Next wave: " + waveForm);
+    waveForm = (waveForm + 1) % 5;
 
-  }
-
-  public void drawFreq() {
-    for (int i = 0; i < width - 1; ++i) {
-      point(i, height / 2 - (height * 0.49f) * wave.getWaveform().value((float) i / width));
+    System.out.println(waveForm);
+    switch (waveForm) {
+    case 0:
+      wave.setWaveform(Waves.SINE);
+      accord1.setWaveform(Waves.SINE);
+      accord2.setWaveform(Waves.SINE);
+      break;
+    case 1:
+      wave.setWaveform(Waves.TRIANGLE);
+      accord1.setWaveform(Waves.TRIANGLE);
+      accord2.setWaveform(Waves.TRIANGLE);
+      break;
+    case 2:
+      wave.setWaveform(Waves.SAW);
+      accord1.setWaveform(Waves.SAW);
+      accord2.setWaveform(Waves.SAW);
+      break;
+    case 3:
+      wave.setWaveform(Waves.SQUARE);
+      accord1.setWaveform(Waves.SQUARE);
+      accord2.setWaveform(Waves.SQUARE);
+      break;
+    case 4:
+      wave.setWaveform(Waves.QUARTERPULSE);
+      accord1.setWaveform(Waves.QUARTERPULSE);
+      accord2.setWaveform(Waves.QUARTERPULSE);
+      break;
     }
   }
 
-  public void drawType() {
+  public void drawType(int x, int y) {
+    int height = 20;
+    int width = 80;
+    rect(x, y, width, height);
+    translate(x, y);
+    for (int i = 0; i < width - 1; i++) {
+      point(i, height / 2 - (height * 0.4f) * wave.getWaveform().value((float) i / width));
+    }
+    translate(-x, -y);
+  }
+
+  public void drawFreq() {
     for (int i = 0; i < out.bufferSize() - 1; i++) {
       line(i, 50 - out.left.get(i) * 50, i + 1, 50 - out.left.get(i + 1) * 50);
       line(i, 150 - out.right.get(i) * 50, i + 1, 150 - out.right.get(i + 1) * 50);
@@ -276,8 +321,8 @@ public class Theremin extends PApplet {
       accord1.setAmplitude(ampAcc);
       accord2.setAmplitude(ampAcc);
 
-      acc1 = musicScale.NoteByDistance(note, 4);
-      acc2 = musicScale.NoteByDistance(note, 7);
+      acc1 = musicScale.NoteByDistance(note, 4).clone();
+      acc2 = musicScale.NoteByDistance(note, 7).clone();
 
     } else if (rotation < 0f) { // Dur
       float ampAcc = map(rotation, 0.0f, (float) -Math.PI + 2f, 0f, 1f);
@@ -286,8 +331,8 @@ public class Theremin extends PApplet {
       accord1.setAmplitude(ampAcc);
       accord2.setAmplitude(ampAcc);
 
-      acc1 = musicScale.NoteByDistance(note, 3);
-      acc2 = musicScale.NoteByDistance(note, 7);
+      acc1 = musicScale.NoteByDistance(note, 3).clone();
+      acc2 = musicScale.NoteByDistance(note, 7).clone();
 
     } else {
       accord1.setAmplitude(0f);
@@ -298,9 +343,11 @@ public class Theremin extends PApplet {
     accord1.setFrequency(new Float(acc1.getFreqencey()));
     accord2.setFrequency(new Float(acc2.getFreqencey()));
 
+    acc1.setPeriod(Period.quarterNote);
+    acc2.setPeriod(Period.quarterNote);
+
     noteDrawer.draw(acc1, (int) ampTrans);
     noteDrawer.draw(acc2, (int) ampTrans);
-
   }
 
   public NoteDrawer getNoteDrawer() {
@@ -313,7 +360,6 @@ public class Theremin extends PApplet {
   }
 
   public boolean metronom() {
-
     return metronom.onOff;
   }
 
@@ -324,14 +370,12 @@ public class Theremin extends PApplet {
       if (currentNote.getKey() != lastNote.getKey()) {
         noteRecorder.addNote(currentNote);
         lastNote = currentNote;
-        // currentNote = null;
       } else if (currentNote.getPeriod() == Period.wholeNote) {
         noteRecorder.addNote(currentNote);
         lastNote = null;
-        // currentNote = null;
+        currentNote = null;
       }
     }
-    // System.out.println(currentNote);
   }
 
   static public void main(String[] passedArgs) {

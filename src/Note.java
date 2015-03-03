@@ -14,7 +14,7 @@ public class Note implements Cloneable {
 
   public Note(double freqencey, String description) {
 
-    setPosX(Theremin.WIDTH_THEREMIN - 100);
+    setPosX(700 - 100);
     setPosY(0);
 
     setFrequence(freqencey);
@@ -124,6 +124,10 @@ public class Note implements Cloneable {
 
   private void setPeriod() {
     period = Period.sixteenthNote;
+  }
+  
+  public void setPeriod(Period period) {
+    this.period = period;
   }
 
   private void setLine() {
