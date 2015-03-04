@@ -1,6 +1,12 @@
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+/**
+ * display the clavier for an other visualization
+ * 
+ * @author Benedikt
+ * @version 1.0
+ */
 public class Clavier {
 
   private Theremin parent;
