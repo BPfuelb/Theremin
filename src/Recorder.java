@@ -7,7 +7,7 @@ public class Recorder {
   private Record[] playerList;
   private int selected;
   private int x, y;
-  private PFont font20;
+  private PFont font20, font10;
   public Recorder(Theremin parent, int xPos, int yPos) {
     this.parent = parent;
     this.x = xPos;
@@ -15,19 +15,31 @@ public class Recorder {
     selected = 4;
     
     font20 = parent.createFont("Arial", 20);
-
+    font10 = parent.createFont("Arial", 10);
+    
     playerList = new Record[MAX_PLAYER];
     for (int i = 0; i < playerList.length; i++) {
       playerList[i] = new Record(parent.minim, parent.out, "myLoop" + i + ".wav");
     }
   }
 
-  public void beginRecord() {
-    if (selected >= 0 && selected <= 5)
+  
+  public void beginEndRecord()
+  {
+    if(playerList[selected].isRecording())
+      endRecord();
+    else
+      beginRecord();
+  }
+  
+  private void beginRecord() {
+    if (selected >= 0 && selected <= 5){
+      playerList[selected].pauseLoop();
       playerList[selected].beginRecord();
+    }
   }
 
-  public void endRecord() {
+  private void endRecord() {
     if (selected >= 0 && selected <= 5)
       playerList[selected].endRecord();
   }
@@ -62,6 +74,13 @@ public class Recorder {
     for (int i = 0; i < MAX_PLAYER; i++) {
       parent.rect(0, i * 40, 150, 40);
     }
+    parent.textFont(font20);
+    parent.text("R", 0, 240 );
+    parent.text("P", 55, 240 );
+    parent.textFont(font10);
+    parent.text("(ecord)", 17, 240 );
+    parent.text("(lay)", 72, 232 );
+    parent.text("(ause)", 72, 242 );
     parent.translate(-x, -y);
   }
 
@@ -69,8 +88,13 @@ public class Recorder {
     parent.strokeWeight(1);
     parent.translate(x, y);
     for (int i = 0; i < MAX_PLAYER; i++) {
-      if (playerList[i].isEmpty())
+      if (playerList[i].isEmpty()&& !playerList[i].isRecording())
         drawNOT(30, 20 + i * 40, 20);
+      else if(playerList[i].isRecording())
+        {
+        parent.fill(255, 0, 0);
+        parent.ellipse(30,20+ i*40, 20, 20);
+        }
       else {
         if (playerList[i].isPlaying()) {
           parent.fill(i * 50, 0, 0, 50);
@@ -81,8 +105,9 @@ public class Recorder {
       }
       parent.fill(0);
       parent.textFont(font20);
-      parent.text("" + i, 4, 25 + 40 * i);
+      parent.text("" + (5-i), 4, 25 + 40 * i);
     }
+
     parent.translate(-x, -y);
   }
 
@@ -130,7 +155,9 @@ public class Recorder {
   }
 
   public void setSelected(int selected) {
-    if (selected >= 0 && selected <= 5)
+    if (selected >= 0 && selected <= 5){
+      endRecord();
       this.selected = selected;
+    }
   }
 }

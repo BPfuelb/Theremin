@@ -89,7 +89,7 @@ public class Theremin extends PApplet {
     noteRecorder.noteListUpdate();
 
     recorder.draw();
-    drawType(20, height-30);
+    drawType(25, height-30);
   }
 
   public void keyPressed() {
@@ -146,10 +146,10 @@ public class Theremin extends PApplet {
       mouseHands = !mouseHands;
       move(0.0f, 0.0f, 0.0f);
     case 'r':
-      recorder.beginRecord();
+      recorder.beginEndRecord();
       break;
     case 's':
-      recorder.endRecord();
+//      recorder.endRecord();
       break;
     case 'p':
       recorder.startPauseLoop();
@@ -199,8 +199,10 @@ public class Theremin extends PApplet {
   public void drawType(int x, int y) {
     int height = 20;
     int width = 80;
+    text("W", x-20, y+18);
     rect(x, y, width, height);
     translate(x, y);
+    
     for (int i = 0; i < width - 1; i++) {
       point(i, height / 2 - (height * 0.4f) * wave.getWaveform().value((float) i / width));
     }

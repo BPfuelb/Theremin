@@ -18,13 +18,13 @@ public class Record {
   }
 
   public void beginRecord() {
-    System.out.println("beginRecord(" + file + ")");
+//    System.out.println("beginRecord(" + file + ")");
     if (!recorder.isRecording())
       recorder.beginRecord();
   }
 
   public void endRecord() {
-    System.out.println("endRecord(" + file + ")");
+//    System.out.println("endRecord(" + file + ")");
     if (recorder.isRecording()) {
       recorder.endRecord();
       recorder.save();
@@ -33,14 +33,14 @@ public class Record {
   }
 
   public void startLoop() {
-    System.out.println("startLoop(" + file + ")");
+//    System.out.println("startLoop(" + file + ")");
     if (player != null && !player.isPlaying()) {
       player.loop();
     }
   }
 
   public void pauseLoop() {
-    System.out.println("stopLoop(" + file + ")");
+//    System.out.println("stopLoop(" + file + ")");
     if (player != null && player.isPlaying()) {
       player.pause();
     }
@@ -50,7 +50,7 @@ public class Record {
     if (player == null) {
       return 0.5f;
     }
-    return ((float)player.position() / (float)player.length());
+    return ((float) player.position() / (float) player.length());
   }
 
   public boolean isPlaying() {
@@ -58,6 +58,10 @@ public class Record {
       return false;
     }
     return player.isPlaying();
+  }
+
+  public boolean isRecording() {
+    return recorder.isRecording();
   }
 
   public boolean isEmpty() {
