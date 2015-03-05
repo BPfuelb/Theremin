@@ -23,6 +23,12 @@ public class Clavier {
     generateKeys();
   }
 
+  /**
+   * draw the key yellow
+   * 
+   * @param keyNumber
+   *          which will be draw yellow
+   */
   public void draw(int keyNumber) {
     parent.translate(x, y);
 
@@ -41,6 +47,9 @@ public class Clavier {
     parent.translate(-x, -y);
   }
 
+  /**
+   * draw all keys of the keyboard
+   */
   public void drawBoard() {
     parent.translate(x, y);
     parent.strokeWeight(1);
@@ -60,6 +69,9 @@ public class Clavier {
     parent.translate(-x, -y);
   }
 
+  /**
+   * generate all Keys of the board
+   */
   private void generateKeys() {
     LinkedHashMap<Double, Note> map = parent.musicScale.scale;
 
@@ -71,8 +83,14 @@ public class Clavier {
     }
   }
 
+  /**
+   * calculate the position of a note at the keyboard
+   * 
+   * @param note
+   *          which will calculated
+   * @return xPosition of the note
+   */
   private int calcPosition(Note note) {
-
     int key = note.getKey();
     int pos = 0;
 

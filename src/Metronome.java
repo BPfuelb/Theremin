@@ -4,6 +4,12 @@ import processing.core.PFont;
 import ddf.minim.AudioInput;
 import ddf.minim.AudioPlayer;
 
+/**
+ * Generate a cyclic click sound and visualize with a filled circle. Use a sperated thread for the beat signal
+ * 
+ * @author Benedikt
+ * @version 1.0
+ */
 public class Metronome implements OnBeat {
 
   private final static int BLACK = 0;
@@ -14,7 +20,7 @@ public class Metronome implements OnBeat {
   private int scale;
 
   private int beat;
-  private float fill = 0;
+  private float fill;
 
   private boolean toggleColor = true;
 
@@ -37,6 +43,7 @@ public class Metronome implements OnBeat {
     onOff = false;
     mute = false;
     beat = 120;
+    fill = 0;
 
     metronome = new ClockGenerator(this, 500);
     player = parent.minim.loadFile("click.wav");
@@ -51,9 +58,11 @@ public class Metronome implements OnBeat {
     font10 = parent.createFont("Arial", 10);
   }
 
+  /**
+   * draw the circle dependent on the beat
+   */
   public void draw() {
     if (onOff) {
-
       if (toggleColor)
         parent.g.fill(BLACK);
       else
@@ -66,6 +75,7 @@ public class Metronome implements OnBeat {
       else
         parent.g.fill(BLACK);
 
+      /* radial fill of circle */
       parent.g.arc((float) posX, (float) posY, scale - 1, scale - 1, (float) Math.PI / 2f, fill, PConstants.PIE);
 
       parent.g.fill(BLACK);
@@ -76,15 +86,16 @@ public class Metronome implements OnBeat {
 
       int beatsPerMinute = (int) (60000 / metronome.getTimer());
 
+      /* display the beats per minute */
       parent.g.text(beatsPerMinute, posX - scale / 7, posY + scale / 12);
 
-      // empty the bar
+      /* emptying per step of the circle */
       fill -= (2 * Math.PI) / ((60000 / beat) / (1000 / 30));
-      
+
       parent.g.fill(BLACK);
       parent.text("+", 96, 50);
       parent.text("-", 98, 70);
-      
+
     } else {
       parent.g.fill(BLACK);
       parent.textFont(font20);
@@ -94,6 +105,12 @@ public class Metronome implements OnBeat {
     }
   }
 
+  /**
+   * refill the circle on beat
+   * 
+   * @param value
+   *          of filling [0,1] (float)
+   */
   public void fill(float value) {
     toggleColor = !toggleColor;
     if (onOff) {
@@ -106,11 +123,16 @@ public class Metronome implements OnBeat {
     }
   }
 
+  /**
+   * change the beat, change the timing of the thread which is used for the beat generation
+   * 
+   * @param change
+   *          value (bpm)
+   */
   public void changeBeat(int change) {
     if (beat + change >= 60 && beat + change <= 200) {
       beat += change;
       metronome.changeBeat(60000 / beat);
-      // System.out.println("Metronom:" + beat);
       parent.textFont(font40);
 
       if (change < 0)
@@ -120,6 +142,9 @@ public class Metronome implements OnBeat {
     }
   }
 
+  /**
+   * allows to turn the metronom on, mute and off
+   */
   public void onOffMute() {
     if (onOff) { // if on
       if (!mute) { // and note mute
@@ -136,6 +161,9 @@ public class Metronome implements OnBeat {
 
   }
 
+  /**
+   * method will called by beat generator thread to refill the circle and record a note
+   */
   @Override
   public void beat(float val) {
     fill(val);

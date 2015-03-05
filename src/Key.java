@@ -1,3 +1,9 @@
+/**
+ * represent a key of a keyboard
+ * 
+ * @author Benedikt
+ * @version 1.0
+ */
 public class Key {
   public int x, height, key;
 
