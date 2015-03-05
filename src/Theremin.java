@@ -1,3 +1,5 @@
+import java.awt.event.KeyEvent;
+
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.event.MouseEvent;
@@ -190,7 +192,6 @@ public class Theremin extends PApplet {
       recorder.beginEndRecord();
       break;
     case 's':
-      // recorder.endRecord();
       break;
     case 'p':
       recorder.startPauseLoop();
@@ -200,6 +201,12 @@ public class Theremin extends PApplet {
       break;
     default:
       break;
+    }
+
+    /* F1 for help window */
+    if (key == CODED) {
+      if (keyCode == KeyEvent.VK_F1)
+        new HelpWindow();
     }
   }
 
@@ -504,6 +511,13 @@ public class Theremin extends PApplet {
         currentNote = null;
       }
     }
+  }
+
+  /**
+   * add a bar line to the recorder
+   */
+  public void addBar() {
+    noteRecorder.addBar(640);
   }
 
   /**

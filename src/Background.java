@@ -20,7 +20,7 @@ public class Background {
   public Background(Theremin parent) {
     this.parent = parent;
 
-    violin = parent.loadImage("violin.png");
+    violin = parent.loadImage("violin2.png");
     bass = parent.loadImage("bass.png");
     mouse = parent.loadImage("mouse.png");
     hand = parent.loadImage("hand.png");
@@ -33,14 +33,20 @@ public class Background {
     drawViolin();
     drawBass();
 
-    parent.line(5, VIOLINPOS + 20, 5, BASSPOS + 60);
-    parent.line(695, VIOLINPOS + 20, 695, BASSPOS + 60);
+    parent.strokeWeight(3);
+    parent.line(5, VIOLINPOS + 21, 5, BASSPOS + 59);
+    parent.line(695, VIOLINPOS + 21, 695, BASSPOS + 59);
+    
+    parent.strokeWeight(1);
+    parent.line(8, VIOLINPOS + 21, 8, BASSPOS + 59);
+    parent.line(692, VIOLINPOS + 21, 692, BASSPOS + 59);
 
     parent.clavier.drawBoard();
 
     drawMouseHand();
     drawQuant();
     drawNoHalf();
+    drawHelp();
   }
 
   /**
@@ -49,7 +55,7 @@ public class Background {
   private void drawViolin() {
     parent.strokeWeight(1);
 
-    parent.image(violin, 10, VIOLINPOS + 8);
+    parent.image(violin, 14, VIOLINPOS + 8);
 
     parent.strokeWeight(1);
     for (int i = 0; i < 5; i++) {
@@ -64,7 +70,7 @@ public class Background {
   private void drawBass() {
     parent.strokeWeight(1);
 
-    parent.image(bass, 0, BASSPOS + 19);
+    parent.image(bass, 4, BASSPOS + 19);
 
     parent.strokeWeight(1);
     for (int i = 0; i < 5; i++) {
@@ -117,6 +123,14 @@ public class Background {
     if (!parent.onlyHalfTone) {
       parent.line(630, 35, 645, 50);
     }
+  }
+
+  private void drawHelp() {
+    parent.textFont(font20);
+    parent.text("F1", 800, 290);
+
+    parent.textFont(font10);
+    parent.text("(help)", 825, 285);
   }
 
 }

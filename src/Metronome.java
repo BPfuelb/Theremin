@@ -21,6 +21,7 @@ public class Metronome implements OnBeat {
 
   private int beat;
   private float fill;
+  private int beatCounter;
 
   private boolean toggleColor = true;
 
@@ -44,6 +45,7 @@ public class Metronome implements OnBeat {
     mute = false;
     beat = 120;
     fill = 0;
+    beatCounter = 0;
 
     metronome = new ClockGenerator(this, 500);
     player = parent.minim.loadFile("click.wav");
@@ -168,6 +170,11 @@ public class Metronome implements OnBeat {
   public void beat(float val) {
     fill(val);
     parent.recordNote();
+
+    beatCounter = (beatCounter + 1) % 4;
+    if (beatCounter == 0) {
+      parent.addBar();
+    }
   }
 
 }
