@@ -169,7 +169,7 @@ public class Metronome implements OnBeat {
   @Override
   public void beat(float val) {
     fill(val);
-    parent.recordNote();
+//    parent.recordNote();
 
     beatCounter = (beatCounter + 1) % 4;
     if (beatCounter == 0) {

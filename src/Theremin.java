@@ -218,7 +218,6 @@ public class Theremin extends PApplet {
   public void nextWave() {
     waveForm = (waveForm + 1) % 5;
 
-    System.out.println(waveForm);
     switch (waveForm) {
     case 0:
       wave.setWaveform(Waves.SINE);
@@ -337,6 +336,9 @@ public class Theremin extends PApplet {
       if (note.getKey() != currentNote.getKey())
         currentNote = note.clone();
 
+      if (!metronom.onOff) 
+        currentNote.setPeriod(Period.quarterNote);
+      
       rotation(rotate, currentNote);
 
       fill(0);
@@ -459,8 +461,12 @@ public class Theremin extends PApplet {
     accord2.setFrequency(new Float(acc2.getFreqencey()));
 
     /* no period for accord notes */
-    acc1.setPeriod(Period.quarterNote);
-    acc2.setPeriod(Period.quarterNote);
+    acc1.setPeriod(note.getPeriod());
+    acc2.setPeriod(note.getPeriod());
+
+    /* no steam same as original note */
+    acc1.setSteam(note.getSteam());
+    acc2.setSteam(note.getSteam());
 
     /* draw additional notes */
     noteDrawer.draw(acc1, (int) ampTrans);
@@ -477,11 +483,33 @@ public class Theremin extends PApplet {
   }
 
   /**
-   * increase the current note period (flag)
+   * increase the current note period (flag). If the note is an other note than played before, it will recorded
+   * 
    */
   public void increaseNote() {
-    if (currentNote != null)
-      currentNote.increase();
+
+    if (metronom.onOff) {
+      if (lastNote == null)
+        lastNote = currentNote;
+
+      if (currentNote == null)
+        return;
+
+      if (currentNote.getKey() != lastNote.getKey()) {
+        noteRecorder.addNote(lastNote);
+        lastNote = currentNote;
+      }
+
+      if (currentNote != null)
+        currentNote.increase();
+
+      if (currentNote.getPeriod() == Period.wholeNote) {
+        noteRecorder.addNote(currentNote);
+        lastNote = null;
+        currentNote = null;
+      }
+
+    }
   }
 
   /**
@@ -491,26 +519,6 @@ public class Theremin extends PApplet {
    */
   public boolean metronom() {
     return metronom.onOff;
-  }
-
-  /**
-   * recordNote is called from the NoteRecorder thread to collect the current played note
-   * 
-   * TODO not every note is collected
-   */
-  public void recordNote() {
-    if (lastNote == null)
-      lastNote = currentNote;
-    if (currentNote != null) {
-      if (currentNote.getKey() != lastNote.getKey()) {
-        noteRecorder.addNote(currentNote);
-        lastNote = currentNote;
-      } else if (currentNote.getPeriod() == Period.wholeNote) {
-        noteRecorder.addNote(currentNote);
-        lastNote = null;
-        currentNote = null;
-      }
-    }
   }
 
   /**
@@ -526,7 +534,6 @@ public class Theremin extends PApplet {
    * @param passedArgs
    */
   static public void main(String[] passedArgs) {
-    System.out.println("main wird aufgerufen");
     String[] appletArgs = new String[] { "Theremin" };
     if (passedArgs != null) {
       PApplet.main(concat(appletArgs, passedArgs));

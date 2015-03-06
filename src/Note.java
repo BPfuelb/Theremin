@@ -106,7 +106,7 @@ public class Note implements Cloneable {
     isHalftone = MusicalScale.isNoteHalfStep(key);
   }
 
-  public void setSteam() {
+  private void setSteam() {
     int key = getKey();
 
     if (key >= 40) {
@@ -122,6 +122,11 @@ public class Note implements Cloneable {
     }
   }
 
+  public void setSteam(Steam steam)
+  {
+    this.steam = steam;
+  }
+  
   private void setPeriod() {
     period = Period.sixteenthNote;
   }

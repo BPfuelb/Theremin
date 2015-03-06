@@ -1,7 +1,5 @@
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import ddf.minim.ugens.Vocoder;
-
 public class NoteRecorder implements OnBeat {
 
   private CopyOnWriteArrayList<Note> noteDisplay;
@@ -69,7 +67,6 @@ public class NoteRecorder implements OnBeat {
   @Override
   public void beat(float f) {
     parent.increaseNote();
-
   }
 
   public void drawAll() {
