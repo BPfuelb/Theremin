@@ -30,7 +30,7 @@ public class ClockGenerator extends Thread {
 
       /* beat function */
       parent.beat(1f);
-
+      
       try {
         wait(timer); /* sleep timer */
       } catch (InterruptedException e) {

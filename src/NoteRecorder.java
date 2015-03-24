@@ -59,14 +59,14 @@ public class NoteRecorder implements OnBeat {
   public void changeBeat(int change) {
     if (beat + change >= 60 && beat + change <= 200) {
       beat += change;
-      collectorBeat.changeBeat(60000 / (beat / 4));
-      // System.out.println("Metronom:" + beat);
+      collectorBeat.changeBeat(60000 / beat / 4);
     }
   }
 
   @Override
   public void beat(float f) {
     parent.increaseNote();
+    System.out.println("parent_increaseNote");
   }
 
   public void drawAll() {
