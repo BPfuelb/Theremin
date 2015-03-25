@@ -129,7 +129,7 @@ public class Metronome implements OnBeat {
    * change the beat, change the timing of the thread which is used for the beat generation
    * 
    * @param change
-   *          value (bpm)
+   *          value (bpm change)
    */
   public void changeBeat(int change) {
     if (beat + change >= 60 && beat + change <= 200) {

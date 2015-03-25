@@ -163,7 +163,7 @@ public class Theremin extends PApplet {
       onlyHalfTone = !onlyHalfTone;
       break;
     case '+':
-      if (metronom()) {
+      if (metronom.onOff) {
         fill(0);
         metronom.changeBeat(+5);
         noteRecorder.changeBeat(+5);
@@ -171,7 +171,7 @@ public class Theremin extends PApplet {
       break;
 
     case '-':
-      if (metronom()) {
+      if (metronom.onOff) {
         fill(0);
         metronom.changeBeat(-5);
         noteRecorder.changeBeat(-5);
@@ -336,10 +336,10 @@ public class Theremin extends PApplet {
       if (note.getKey() != currentNote.getKey())
         currentNote = note.clone();
 
-      if (!metronom.onOff) 
+      if (!metronom.onOff)
         currentNote.setPeriod(Period.quarterNote);
-      
-      rotation(rotate, currentNote);
+
+      rotation(rotate * amp, currentNote);
 
       fill(0);
       text(note.getDescription(), width / 2 - 50, 200);
@@ -384,8 +384,6 @@ public class Theremin extends PApplet {
       mouseRotation += 0.1;
     else
       mouseRotation -= 0.1;
-
-    System.out.println(mouseRotation);
   }
 
   /**
@@ -510,15 +508,6 @@ public class Theremin extends PApplet {
       }
 
     }
-  }
-
-  /**
-   * return the status of the metronom (on/off)
-   * 
-   * @return status of the metronom
-   */
-  public boolean metronom() {
-    return metronom.onOff;
   }
 
   /**

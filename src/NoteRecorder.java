@@ -66,7 +66,6 @@ public class NoteRecorder implements OnBeat {
   @Override
   public void beat(float f) {
     parent.increaseNote();
-    System.out.println("parent_increaseNote");
   }
 
   public void drawAll() {
